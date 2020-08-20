@@ -44,12 +44,15 @@
             vSidebar
         },
         created() {
-
             this.$bus.on('collapse-content', msg => {
                 this.collapse = msg;
             });
-
         },
+        beforeDestroy() {
+            this.$bus.off('collapse-content', msg => {
+                this.collapse = msg;
+            });
+        }
     }
 
 </script>

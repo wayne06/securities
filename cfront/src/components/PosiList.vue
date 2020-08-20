@@ -8,20 +8,12 @@
         </el-row>
 
         <el-table
-                :data="
-                    tableData.slice
-                    (
-                        (query.currentPage - 1) * query.pageSize,
-                        query.currentPage * query.pageSize
-                    )
-                "
+                :data="tableData.slice((query.currentPage - 1) * query.pageSize, query.currentPage * query.pageSize)"
                 border
                 :cell-style="cellStyle"
                 @sort-change="changeTableSort"
         >
-            <el-table-column prop="code" label="代码" align="center"
-                             sortable :sort-orders="['ascending', 'descending']"
-            />
+            <el-table-column prop="code" label="代码" align="center" sortable :sort-orders="['ascending', 'descending']"/>
             <el-table-column prop="name" label="名称" align="center"/>
             <el-table-column prop="count" label="股票数量" align="center"/>
             <el-table-column prop="cost" label="总投入" align="center"/>
@@ -29,20 +21,9 @@
         </el-table>
 
         <div class="pagination">
-            <el-button round
-                       type="primary" size="mini"
-                       style="margin-top:2px;float: right"
-                       icon="el-icon-refresh"
-                       @click="">
-                刷新
-            </el-button>
-            <el-pagination
-                    background
-                    layout="total, prev, pager, next"
-                    :current-page="query.currentPage"
-                    :page-size="query.pageSize"
-                    :total="dataTotalCount"
-                    @current-change="handlePageChange"/>
+            <el-button round type="primary" size="mini" style="margin-top:2px;float: right" icon="el-icon-refresh" @click=""></el-button>
+            <el-pagination background layout="total, prev, pager, next" :current-page="query.currentPage"
+                    :page-size="query.pageSize" :total="dataTotalCount" @current-change="handlePageChange"/>
         </div>
 
     </div>
@@ -88,7 +69,7 @@
             },
 
             cellStyle({row, column, rowIndex, columnIndex}) {
-                    return "padding:2px";
+                return "padding:2px";
             },
         },
         computed: {},

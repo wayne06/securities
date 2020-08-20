@@ -130,9 +130,19 @@
         created() {
             // 通过 Event Bus 进行组件间通信，来折叠侧边栏
             this.$bus.on('collapse', msg => {
+                this.collapseChange(msg);
+            });
+        },
+        beforeDestroy() {
+            this.$bus.off('collapse', msg => {
+                this.collapseChange(msg);
+            });
+        },
+        methods: {
+            collapseChange(msg) {
                 this.collapse = msg;
                 this.$bus.emit('collapse-content', msg);
-            });
+            }
         }
     };
 </script>
