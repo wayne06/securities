@@ -27,7 +27,7 @@
             </el-form-item>
 
             <el-form-item>
-                <el-button :type="direction === 0 ? 'danger' : 'success'" style="float: right" >
+                <el-button :type="direction === 0 ? 'danger' : 'success'" style="float: right">
                     {{direction === 0 ? '买入' : '卖出'}}
                 </el-button>
             </el-form-item>
