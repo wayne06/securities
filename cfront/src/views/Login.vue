@@ -3,39 +3,64 @@
     <div class="login-wrap">
         <!--    第二步，增加element ui    -->
         <!--    第三步   -->
-        <el-form class="login-container">
+        <el-form class="login-container" :model="loginForm" :rules="rules" ref="loginForm">
             <h3 class="title">用户登录</h3>
-            <el-form-item>
-                <el-input type="text" placeholder="账号"></el-input>
+            <el-form-item prop="uid">
+                <el-input type="text" placeholder="账号" v-model="loginForm.uid"></el-input>
             </el-form-item>
-            <el-form-item>
-                <el-input type="password" placeholder="密码"></el-input>
+            <el-form-item prop="password">
+                <el-input type="password" placeholder="密码" v-model="loginForm.password"></el-input>
             </el-form-item>
             <el-row>
                 <el-col :span="12">
-                    <el-form-item>
+                    <el-form-item prop="captcha">
                         <el-row>
-                            <el-input type="text" auto-complete="off" placeholder="验证码"/>
+                            <el-input type="text" auto-complete="off" placeholder="验证码"
+                                      v-model="loginForm.captcha" @keyup.enter.native="submitForm('loginForm')"/>
                         </el-row>
                     </el-form-item>
                 </el-col>
-                <el-col :span="12">
-                    <img />
+                <el-col :span="12" style="text-align: right">
+                    <img :src="codeImg" @click="getCode()"/>
                 </el-col>
             </el-row>
             <el-form-item>
-                <el-button type="primary" style="width:100%;">
+                <el-button type="primary" style="width:100%;" :loading="logging" @click="submitForm('loginForm')">
                     登录
                 </el-button>
             </el-form-item>
         </el-form>
-
     </div>
 </template>
 
 <script>
     export default {
-        name: "Login"
+        name: "Login",
+        data() {
+            return {
+                loginForm: {
+                    uid: '',
+                    password: '',
+                    captcha: '',
+                    captchaId: '',
+                },
+                codeImg: '',
+                rules: {
+                    uid: [{required: true, message: '请输入帐号', trigger: 'blur'}],
+                    password: [{required: true, message: '请输入密码', trigger: 'blur'}],
+                    captcha: [{required: true, message: '请输入验证码', trigger: 'blur'}],
+                },
+                logging: false,
+            }
+        },
+        methods: {
+            getCode() {
+
+            },
+            submitForm(formName) {
+
+            },
+        }
     }
 </script>
 
