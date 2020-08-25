@@ -25,7 +25,7 @@
                 </el-col>
             </el-row>
             <el-form-item>
-                <el-button type="primary" style="width:100%;" :loading="logging" @click="submitForm('loginForm')">
+                <el-button type="primary" style="width:100%;" :loading="logged" @click="submitForm('loginForm')">
                     登录
                 </el-button>
             </el-form-item>
@@ -34,6 +34,10 @@
 </template>
 
 <script>
+
+    import {queryCaptcha, login} from "../api/loginApi";
+    import encryptMD5 from 'js-md5';
+
     export default {
         name: "Login",
         data() {
@@ -50,16 +54,55 @@
                     password: [{required: true, message: '请输入密码', trigger: 'blur'}],
                     captcha: [{required: true, message: '请输入验证码', trigger: 'blur'}],
                 },
-                logging: false,
+                logged: false,
             }
         },
         methods: {
-            getCode() {
+            // common.js（网络交互） <- logic.js（业务逻辑） <- vue
 
+            getCode() {
+                queryCaptcha(this.captchaCallback);
             },
             submitForm(formName) {
-
+                this.$refs[formName].validate(valid => {
+                    if (valid) {
+                        this.logged = true;
+                        login({
+                            uid: this.loginForm.uid,
+                            password: encryptMD5(this.loginForm.password),
+                            captcha: this.loginForm.captcha,
+                            captchaId: this.loginForm.captchaId,
+                        }, this.loginCallback);
+                    } else {
+                        this.$message.error('输入项不能为空');
+                        this.logged = false;
+                    }
+                })
             },
+            captchaCallback(code, msg, captchaData) {
+                this.loginForm.captchaId = captchaData.id;
+                this.codeImg = captchaData.imageBase64;
+            },
+            loginCallback(code, msg, acc) {
+                if (code == 2) {
+                    this.$message.error(msg);
+                    this.logged = false;
+                    this.getCode();
+                } else {
+                    sessionStorage.setItem("uid", acc.uid);
+                    sessionStorage.setItem("token", acc.token);
+                    if (acc.lastLoginDate.length > 1) {
+                        this.$message.success("登录成功，上次登录时间为："
+                            + acc.lastLoginDate + " " + acc.lastLoginTime);
+                    } else {
+                        this.$message.success("登录成功");
+                    }
+                    setTimeout(() => {
+                        this.logged = false;
+                        this.$router.push({path: '/dashboard'});
+                    }, 1000);
+                }
+            }
         }
     }
 </script>
