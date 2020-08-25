@@ -9,6 +9,7 @@ import router from "../router";
 
 // 通用公共方法，含回调
 export const reqRealEndAsync = (method, baseUrl, url, params, callback) => {
+    params.token = sessionStorage.getItem('token');
     return axios({
         timeout: 5000,
         baseUrl: baseUrl,
@@ -42,6 +43,7 @@ export const reqRealEndAsync = (method, baseUrl, url, params, callback) => {
 
 // 通用公共方法，无回调
 export const reqRealEnd = (method, baseUrl, url, params) => {
+    params.token = sessionStorage.getItem('token');
     return axios({
         timeout: 5000,
         baseUrl: baseUrl,

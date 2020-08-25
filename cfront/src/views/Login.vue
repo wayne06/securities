@@ -57,6 +57,9 @@
                 logged: false,
             }
         },
+        created() {
+            this.getCode();
+        },
         methods: {
             // common.js（网络交互） <- logic.js（业务逻辑） <- vue
 
