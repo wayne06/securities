@@ -1,3 +1,5 @@
+server.port: 8090
+
 spring:
     datasource:
         url: jdbc:sqlite:E:\skill up\DOING\trader\code\counter.db
@@ -12,3 +14,14 @@ mybatis:
 mybatis-plus:
     configuration:
         jdbc-type-for-null: 'null'
+
+# 缓存过期时间
+cacheexpire:
+    captcha: 100
+    account: 3600
+    order: 36000
+
+# 机器位置：机房id，机柜id
+counter:
+    dataCenterId: 0
+    workerId: 0
