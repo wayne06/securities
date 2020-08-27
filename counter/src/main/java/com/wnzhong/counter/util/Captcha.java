@@ -1,11 +1,18 @@
 package com.wnzhong.counter.util;
 
+import lombok.Getter;
+
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.util.Base64;
 import java.util.Random;
 
 public class Captcha {
 
+    @Getter
     private String code;
 
     private BufferedImage bufferedImage;
@@ -67,4 +74,14 @@ public class Captcha {
         int b = fc + random.nextInt(bc - fc);
         return new Color(r, g, b);
     }
+
+    public String getBase64ByteStr() throws IOException {
+        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+        ImageIO.write(bufferedImage, "png", byteArrayOutputStream);
+
+        String s = Base64.getEncoder().encodeToString(byteArrayOutputStream.toByteArray());
+        s = s.replaceAll("\n", "").replaceAll("\r", "");
+        return "data:image/jpg;base64," + s;
+    }
+
 }
