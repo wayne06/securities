@@ -1,4 +1,4 @@
-package com.wnzhong.counter.bean.res;
+package com.wnzhong.counter.bean;
 
 import lombok.*;
 

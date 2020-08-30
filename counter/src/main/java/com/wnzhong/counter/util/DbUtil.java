@@ -2,7 +2,7 @@ package com.wnzhong.counter.util;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
-import com.wnzhong.counter.bean.res.Account;
+import com.wnzhong.counter.bean.Account;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
