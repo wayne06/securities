@@ -2,6 +2,9 @@ package com.wnzhong.counter.bean;
 
 import lombok.*;
 
+/**
+ * @author wayne
+ */
 @Getter
 @Setter
 @ToString
