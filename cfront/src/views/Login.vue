@@ -59,6 +59,9 @@
         },
         created() {
             this.getCode();
+            if (Boolean(this.$route.query.msg)) {
+                this.$message.info(this.$route.query.msg + '');
+            }
         },
         methods: {
             // common.js（网络交互） <- logic.js（业务逻辑） <- vue

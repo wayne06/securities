@@ -23,7 +23,7 @@
                         <i class="el-icon-caret-bottom"></i>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item command="loginout">退出登录</el-dropdown-item>
+                        <el-dropdown-item command="logout">退出登录</el-dropdown-item>
                     </el-dropdown-menu>
                 </el-dropdown>
             </div>
@@ -32,6 +32,8 @@
     </div>
 </template>
 <script>
+
+    import {logout} from '../api/loginApi'
 
     export default {
         data() {
@@ -50,9 +52,8 @@
         methods: {
             // 用户名下拉菜单选择事件
             handleCommand(command) {
-                if (command == 'loginout') {
-                    //TODO logout
-                    // logout();
+                if (command == 'logout') {
+                    logout();
                 }
             },
             // 侧边栏折叠
