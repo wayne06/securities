@@ -7,10 +7,12 @@ import com.wnzhong.counter.util.DbUtil;
 import com.wnzhong.counter.util.JsonUtil;
 import com.wnzhong.counter.util.TimeUtil;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.stereotype.Service;
 import thirdparty.uuid.MyUuid;
 
 import java.util.Date;
 
+@Service
 public class AccountServiceImpl implements AccountService {
 
     @Override
@@ -55,5 +57,17 @@ public class AccountServiceImpl implements AccountService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public boolean logout(String token) {
+        RedisStringCache.remove(token, CacheType.ACCOUNT);
+        return true;
+    }
+
+    @Override
+    public boolean changePassword(long uid, String oldPass, String newPass) {
+        int res = DbUtil.updatePassword(uid, oldPass, newPass);
+        return res == 0 ? false : true;
     }
 }

@@ -1,13 +1,16 @@
 package com.wnzhong.counter.controller;
 
+import com.wnzhong.counter.bean.Account;
 import com.wnzhong.counter.bean.res.CaptchaRes;
 import com.wnzhong.counter.bean.res.CounterRes;
 import com.wnzhong.counter.cache.CacheType;
 import com.wnzhong.counter.cache.RedisStringCache;
+import com.wnzhong.counter.service.AccountService;
 import com.wnzhong.counter.util.Captcha;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import thirdparty.uuid.MyUuid;
 
@@ -17,6 +20,9 @@ import java.io.IOException;
 @RequestMapping("/login")
 @Log4j2
 public class LoginController {
+
+    @Autowired
+    private AccountService accountService;
 
     @RequestMapping("/captcha")
     public CounterRes captcha() throws IOException {
@@ -33,7 +39,34 @@ public class LoginController {
     }
 
     @RequestMapping("/userlogin")
-    public CounterRes login() {
-        return null;
+    public CounterRes login(@RequestParam long uid, @RequestParam String password,
+                            @RequestParam String captcha, @RequestParam String captchaId) {
+        Account account = accountService.login(uid, password, captcha, captchaId);
+        if (account == null) {
+            return new CounterRes(CounterRes.FAIL, "login failed.", null);
+        } else {
+            return new CounterRes(account);
+        }
+    }
+
+    @RequestMapping("/loginfail")
+    public CounterRes loginFail() {
+        return new CounterRes(CounterRes.RELOGIN, "please retry.", null);
+    }
+
+    @RequestMapping("/logout")
+    public CounterRes logout(@RequestParam String token) {
+        accountService.logout(token);
+        return new CounterRes(CounterRes.SUCCESS, "logout success.", null);
+    }
+
+    @RequestMapping("/changepass")
+    public CounterRes changePass(@RequestParam long uid, @RequestParam String oldPass, @RequestParam String newPass) {
+        boolean res = accountService.changePassword(uid, oldPass, newPass);
+        if (res) {
+            return new CounterRes(CounterRes.SUCCESS, "password updated.", null);
+        } else {
+            return new CounterRes(CounterRes.FAIL, "password update failed.", null);
+        }
     }
 }

@@ -9,6 +9,10 @@ import lombok.Getter;
 @AllArgsConstructor
 public class CounterRes {
 
+    public static final int SUCCESS = 0;
+    public static final int RELOGIN = 1;
+    public static final int FAIL = 2;
+
     @Getter
     private int code;
 

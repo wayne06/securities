@@ -2,12 +2,25 @@ package com.wnzhong.counter.util;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Lists;
+import com.sun.org.apache.bcel.internal.generic.IMUL;
+import com.sun.org.apache.xerces.internal.dom.PSVIAttrNSImpl;
 import com.wnzhong.counter.bean.Account;
+import com.wnzhong.counter.bean.OrderInfo;
+import com.wnzhong.counter.bean.PosiInfo;
+import com.wnzhong.counter.bean.TradeInfo;
+import com.wnzhong.counter.cache.CacheType;
+import com.wnzhong.counter.cache.RedisStringCache;
+import org.apache.catalina.LifecycleState;
+import org.apache.commons.lang3.StringUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
+import java.util.Collections;
+import java.util.List;
 
 @Component
 public class DbUtil {
@@ -43,6 +56,8 @@ public class DbUtil {
         }
     }
 
+    //********************************** 认证 **********************************
+
     public static Account queryAccount(long uid, String password) {
         return dbUtil.getSqlSessionTemplate().selectOne(
                 "userMapper.queryAccount",
@@ -56,4 +71,77 @@ public class DbUtil {
                 ImmutableMap.of("Uid", uid, "ModifyDate", nowDate, "ModifyTime", nowTime)
         );
     }
+
+    public static int updatePassword(long uid, String oldPass, String newPass) {
+        return dbUtil.getSqlSessionTemplate().update(
+                "userMapper.updatePassword",
+                ImmutableMap.of("Uid", uid, "OldPass", oldPass, "NewPass", newPass)
+        );
+    }
+
+    //********************************** 资金 **********************************
+
+    public static long getBalance(long uid) {
+        Long balance = dbUtil.getSqlSessionTemplate().selectOne(
+                "orderMapper.queryBalance",
+                ImmutableMap.of("Uid", uid)
+        );
+        return balance == null ? -1 : balance;
+    }
+
+    //********************************** 持仓 **********************************
+
+    public static List<PosiInfo> getPosiList(long uid) {
+        String uidStr = String.valueOf(uid);
+        String posiInCache = RedisStringCache.get(uidStr, CacheType.POSI);
+        if (StringUtils.isEmpty(posiInCache)) {
+            List<PosiInfo> posiInfos = dbUtil.getSqlSessionTemplate().selectList(
+                    "orderMapper.queryPosi",
+                    ImmutableMap.of("Uid", uid)
+            );
+            List<PosiInfo> res = CollectionUtils.isEmpty(posiInfos) ? Lists.newArrayList() : posiInfos;
+            RedisStringCache.cache(uidStr, JsonUtil.toJson(posiInfos), CacheType.POSI);
+            return res;
+        } else {
+            return JsonUtil.fromJsonArr(posiInCache, PosiInfo.class);
+        }
+    }
+
+    //********************************** 委托 **********************************
+
+    public static List<OrderInfo> getOrderList(long uid) {
+        String uidStr = String.valueOf(uid);
+        String orderInCache = RedisStringCache.get(uidStr, CacheType.ORDER);
+        if (StringUtils.isEmpty(orderInCache)) {
+            List<OrderInfo> orderInfos = dbUtil.getSqlSessionTemplate().selectList(
+                    "orderMapper.queryOrder",
+                    ImmutableMap.of("Uid", uid)
+            );
+            List<OrderInfo> res = CollectionUtils.isEmpty(orderInfos) ? Lists.newArrayList() : orderInfos;
+            RedisStringCache.cache(uidStr, JsonUtil.toJson(orderInfos), CacheType.ORDER);
+            return res;
+        } else {
+            return JsonUtil.fromJsonArr(orderInCache, OrderInfo.class);
+        }
+    }
+
+    //********************************** 成交 **********************************
+
+    public static List<TradeInfo> getTradeList(long uid) {
+        String uidStr = String.valueOf(uid);
+        String tradeInCache = RedisStringCache.get(uidStr, CacheType.TRADE);
+        if (StringUtils.isEmpty(tradeInCache)) {
+            List<TradeInfo> tradeInfos = dbUtil.getSqlSessionTemplate().selectList(
+                    "orderMapper.queryTrade",
+                    ImmutableMap.of("Uid", uid)
+            );
+            List<TradeInfo> res = CollectionUtils.isEmpty(tradeInfos) ? Lists.newArrayList() : tradeInfos;
+            RedisStringCache.cache(uidStr, JsonUtil.toJson(res), CacheType.TRADE);
+            return res;
+        } else {
+            return JsonUtil.fromJsonArr(tradeInCache, TradeInfo.class);
+        }
+
+    }
+
 }

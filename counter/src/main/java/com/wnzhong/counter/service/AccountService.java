@@ -8,4 +8,7 @@ public interface AccountService {
 
     boolean accountExistInCache(String token);
 
+    boolean logout(String token);
+
+    boolean changePassword(long uid, String oldPass, String newPass);
 }

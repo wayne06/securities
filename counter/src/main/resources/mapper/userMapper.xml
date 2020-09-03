@@ -18,12 +18,23 @@
 
     <update id="updateLoginTime" parameterType="hashmap">
         update
-          t_user t
+          t_user
         set
           modifyDate = #{ModifyDate},
           modifyTime = #{ModifyTime}
         where
-          t.uid = #{Uid}
+          uid = #{Uid}
+    </update>
+
+    <update id="updatePassword" parameterType="hashmap">
+        update
+          t_user
+        set
+          password = #{NewPass}
+        where
+          uid = #{Uid}
+          and
+          password = #{OldPass}
     </update>
 
 </mapper>
