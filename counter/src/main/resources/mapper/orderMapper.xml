@@ -23,7 +23,7 @@
           t_posi p,
           t_stock s
         where
-          t.uid = #{Uid, jdbcType=BIGINT}
+          p.uid = #{Uid, jdbcType=BIGINT}
           and
           p.code = s.code
     </select>
@@ -33,7 +33,7 @@
           o.id,
           o.uid,
           o.code,
-          s.name
+          s.name,
           o.direction,
           o.type,
           o.price,
@@ -45,7 +45,7 @@
           t_order o,
           t_stock s
         where
-          t.uid = #{Uid, jdbcType=BIGINT}
+          o.uid = #{Uid, jdbcType=BIGINT}
           and
           o.code = s.code
     </select>
@@ -68,7 +68,7 @@
         where
           t.uid = #{Uid, jdbcType=BIGINT}
           and
-          o.code = s.code
+          t.code = s.code
     </select>
 
 

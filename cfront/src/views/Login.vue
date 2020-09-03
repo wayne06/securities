@@ -37,6 +37,7 @@
 
     import {queryCaptcha, login} from "../api/loginApi";
     import encryptMD5 from 'js-md5';
+    import {queryBalance, queryOrder, queryPosi, queryTrade} from "../api/orderApi";
 
     export default {
         name: "Login",
@@ -106,6 +107,10 @@
                     setTimeout(() => {
                         this.logged = false;
                         this.$router.push({path: '/dashboard'});
+                        queryBalance();
+                        queryPosi();
+                        queryOrder();
+                        queryTrade();
                     }, 1000);
                 }
             }
