@@ -3,15 +3,12 @@ package com.wnzhong.counter.util;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
-import com.sun.org.apache.bcel.internal.generic.IMUL;
-import com.sun.org.apache.xerces.internal.dom.PSVIAttrNSImpl;
 import com.wnzhong.counter.bean.Account;
 import com.wnzhong.counter.bean.OrderInfo;
 import com.wnzhong.counter.bean.PosiInfo;
 import com.wnzhong.counter.bean.TradeInfo;
 import com.wnzhong.counter.cache.CacheType;
 import com.wnzhong.counter.cache.RedisStringCache;
-import org.apache.catalina.LifecycleState;
 import org.apache.commons.lang3.StringUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,8 +16,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
 import javax.annotation.PostConstruct;
-import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 @Component
 public class DbUtil {
@@ -142,6 +139,12 @@ public class DbUtil {
             return JsonUtil.fromJsonArr(tradeInCache, TradeInfo.class);
         }
 
+    }
+
+    //********************************** 股票信息查询 **********************************
+
+    public static List<Map<String, Object>> getStockList() {
+        return dbUtil.getSqlSessionTemplate().selectList("stockMapper.queryStock");
     }
 
 }

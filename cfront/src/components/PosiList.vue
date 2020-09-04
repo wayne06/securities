@@ -53,7 +53,6 @@
         created() {
             this.tableData = this.posiData;
             this.balance = this.balanceData;
-            console.log(this.balance);
         },
         computed: {
             posiData() {

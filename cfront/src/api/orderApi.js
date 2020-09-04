@@ -1,4 +1,4 @@
-import {reqRealEndAsync} from "./axiosCommon";
+import {reqRealEnd, reqRealEndAsync} from "./axiosCommon";
 import {config} from "./frontConfig";
 import store from "../store/index";
 
@@ -7,8 +7,7 @@ export const queryBalance = () => {
         "post", config.real_domain,
         '/api/balance',
         {uid: sessionStorage.getItem('uid')},
-        (code, msg, data) => {store.commit("updateBalance", data);
-            console.log(data);}
+        (code, msg, data) => {store.commit("updateBalance", data);}
     );
 };
 
@@ -36,5 +35,12 @@ export const queryTrade = () => {
         "/api/trade",
         {"uid": sessionStorage.getItem('uid')},
         (code, msg, data) => {store.commit('updateTrade'), data}
+    );
+};
+
+export const queryStock = (params) => {
+    return reqRealEnd(
+        "post", config.real_domain,
+        "/api/stock", params
     );
 };
