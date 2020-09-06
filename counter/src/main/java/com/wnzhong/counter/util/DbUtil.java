@@ -3,6 +3,7 @@ package com.wnzhong.counter.util;
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.wnzhong.counter.bean.Account;
 import com.wnzhong.counter.bean.OrderInfo;
 import com.wnzhong.counter.bean.PosiInfo;
@@ -14,10 +15,13 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import thirdparty.order.OrderCmd;
+import thirdparty.order.OrderStatus;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class DbUtil {
@@ -145,6 +149,30 @@ public class DbUtil {
 
     public static List<Map<String, Object>> getStockList() {
         return dbUtil.getSqlSessionTemplate().selectList("stockMapper.queryStock");
+    }
+
+    //********************************** 订单处理 **********************************
+
+    public static int saveOrder(OrderCmd orderCmd) {
+        Map<String, Object> param = Maps.newHashMap();
+        param.put("UId", orderCmd.uid);
+        param.put("Code", orderCmd.code);
+        param.put("Direction", orderCmd.direction.getDirection());
+        param.put("Type", orderCmd.orderType.getType());
+        param.put("Price", orderCmd.price);
+        param.put("OCount", orderCmd.price);
+        param.put("TCount", 0);
+        param.put("Status", OrderStatus.NOT_SET.getCode());
+        param.put("Date", TimeUtil.yyyyMMdd(orderCmd.timestamp));
+        param.put("Time", TimeUtil.hhMMss(orderCmd.timestamp));
+
+        int count = dbUtil.getSqlSessionTemplate().insert("orderMapper.saveOrder", param);
+        if (count > 0) {
+            return Integer.parseInt(param.get("ID").toString());
+        } else {
+            return -1;
+        }
+
     }
 
 }

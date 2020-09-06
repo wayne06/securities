@@ -1,7 +1,6 @@
 package com.wnzhong.counter.util;
 
 import org.apache.commons.lang3.time.DateFormatUtils;
-import org.omg.CORBA.PUBLIC_MEMBER;
 
 import java.util.Date;
 
@@ -13,6 +12,10 @@ public class TimeUtil {
 
     public static String yyyyMMdd(Date date) {
         return DateFormatUtils.format(date, YYYY_MM_DD);
+    }
+
+    public static String yyyyMMdd(long timestamp){
+        return DateFormatUtils.format(timestamp,YYYY_MM_DD);
     }
 
     public static String hhMMss(Date date) {
