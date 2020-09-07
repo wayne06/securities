@@ -151,7 +151,7 @@ public class DbUtil {
         return dbUtil.getSqlSessionTemplate().selectList("stockMapper.queryStock");
     }
 
-    //********************************** 订单处理 **********************************
+    //********************************** 订单处理（发送保存委托） **********************************
 
     public static int saveOrder(OrderCmd orderCmd) {
         Map<String, Object> param = Maps.newHashMap();
@@ -160,9 +160,16 @@ public class DbUtil {
         param.put("Direction", orderCmd.direction.getDirection());
         param.put("Type", orderCmd.orderType.getType());
         param.put("Price", orderCmd.price);
-        param.put("OCount", orderCmd.price);
+
+        // 委托量
+        param.put("OCount", orderCmd.volume);
+
+        // 成交量：委托刚到柜台，所以默认为0
         param.put("TCount", 0);
+
+        // 未报状态
         param.put("Status", OrderStatus.NOT_SET.getCode());
+
         param.put("Date", TimeUtil.yyyyMMdd(orderCmd.timestamp));
         param.put("Time", TimeUtil.hhMMss(orderCmd.timestamp));
 

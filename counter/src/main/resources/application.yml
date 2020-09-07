@@ -23,5 +23,6 @@ cacheexpire:
 
 # 机器位置：机房id，机柜id
 counter:
+    id: 1000
     dataCenterId: 0
     workerId: 0

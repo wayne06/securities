@@ -14,7 +14,8 @@ public class OrderCmd implements Serializable {
     public long timestamp;
 
     /**
-     * 会员ID
+     * 会员ID：交易所的每家会员的id，不同的会员的柜台id是有区别的，涉及到盘后数据的清算工作
+     * 有了这个字段，交易所的撮合核心就能知道这笔单是从哪家券商或哪家机构发过来的
      */
     final public short mid;
 

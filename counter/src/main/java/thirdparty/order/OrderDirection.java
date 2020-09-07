@@ -26,7 +26,8 @@ public enum OrderDirection {
     PLUS_BALANCE(2),
     MINUS_BALANCE(3),
 
-    OTHER(-1);//其他类型执行(撤单 等)
+    //其他类型执行(撤单 等)
+    OTHER(-1);
 
     private byte direction;
 

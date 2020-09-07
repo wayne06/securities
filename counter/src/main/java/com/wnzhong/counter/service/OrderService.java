@@ -3,6 +3,7 @@ package com.wnzhong.counter.service;
 import com.wnzhong.counter.bean.OrderInfo;
 import com.wnzhong.counter.bean.PosiInfo;
 import com.wnzhong.counter.bean.TradeInfo;
+import thirdparty.order.OrderCmd;
 
 import java.util.List;
 
@@ -15,5 +16,7 @@ public interface OrderService {
     List<OrderInfo> getOrder(long uid);
 
     List<TradeInfo> getTrade(long uid);
+
+    boolean sendOrder(OrderCmd orderCmd);
 
 }

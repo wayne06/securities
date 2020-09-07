@@ -14,4 +14,7 @@ public class CounterConfig {
     @Value("${counter.workerId}")
     private long workerId;
 
+    @Value("${counter.id}")
+    private short id;
+
 }
