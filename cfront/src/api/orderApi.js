@@ -44,3 +44,10 @@ export const queryStock = (params) => {
         "/api/stock", params
     );
 };
+
+export const sendOrder = (params, callback) => {
+    return reqRealEndAsync(
+        "post", config.real_domain,
+        "/api/sendorder", params, callback
+    )
+};
