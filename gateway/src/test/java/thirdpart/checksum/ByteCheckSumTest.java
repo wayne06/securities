@@ -7,9 +7,9 @@ class ByteCheckSumTest {
         String b = "test1";
         String c = "test";
 
-        byte ca = new ByteCheckSum().getCheckSum(a.getBytes());
-        byte cb = new ByteCheckSum().getCheckSum(b.getBytes());
-        byte cc = new ByteCheckSum().getCheckSum(c.getBytes());
+        byte ca = new ByteCheckSum().getSum(a.getBytes());
+        byte cb = new ByteCheckSum().getSum(b.getBytes());
+        byte cc = new ByteCheckSum().getSum(c.getBytes());
 
         System.out.println(ca);
         System.out.println(cb);

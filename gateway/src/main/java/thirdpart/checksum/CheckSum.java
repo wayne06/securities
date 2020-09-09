@@ -2,6 +2,6 @@ package thirdpart.checksum;
 
 public interface CheckSum {
 
-    byte getCheckSum(byte[] data);
+    byte getSum(byte[] data);
 
 }
