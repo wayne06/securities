@@ -1,104 +1,113 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
-<mapper namespace="orderMapper" >
+<mapper namespace="orderMapper">
 
-    <select id="queryBalance" resultType="long">
-        select
-          t.balance
-        from
-          t_user t
-        where
-          t.uid = #{Uid, jdbcType=BIGINT}
-    </select>
+  <select id="queryBalance" resultType="long">
+    select
+      t.balance
+    from
+      t_user t
+    where
+      t.uid = #{Uid, jdbcType=BIGINT}
+   </select>
 
-    <select id="queryPosi" resultType="com.wnzhong.counter.bean.PosiInfo">
-        select
-          p.id,
-          p.uid,
-          p.code,
-          s.name,
-          p.cost,
-          p.count
-        from
-          t_posi p,
-          t_stock s
-        where
-          p.uid = #{Uid, jdbcType=BIGINT}
-          and
-          p.code = s.code
-    </select>
+  <select id="updateBalance" parameterType="map">
+    update
+      t_user
+    set
+      balance = balance + #{variation, jdbcType=BIGIN}
+    where
+      uid = #{UId, jdbcType=BIGINT}
+  </select>
 
-    <select id="queryOrder" resultType="com.wnzhong.counter.bean.OrderInfo">
-        select
-          o.id,
-          o.uid,
-          o.code,
-          s.name,
-          o.direction,
-          o.type,
-          o.price,
-          o.ocount,
-          o.status,
-          o.date,
-          o.time
-        from
-          t_order o,
-          t_stock s
-        where
-          o.uid = #{Uid, jdbcType=BIGINT}
-          and
-          o.code = s.code
-    </select>
+  <select id="queryPosi" resultType="com.wnzhong.counter.bean.PosiInfo">
+    select
+      p.id,
+      p.uid,
+      p.code,
+      s.name,
+      p.cost,
+      p.count
+    from
+      t_posi p,
+      t_stock s
+    where
+      p.uid = #{Uid, jdbcType=BIGINT}
+      and
+      p.code = s.code
+   </select>
 
-    <select id="queryTrade" resultType="com.wnzhong.counter.bean.TradeInfo">
-        select
-          t.id,
-          t.uid,
-          t.code,
-          s.name,
-          t.direction,
-          t.price,
-          t.tcount,
-          t.oid,
-          t.date,
-          t.time
-        from
-          t_trade t,
-          t_stock s
-        where
-          t.uid = #{Uid, jdbcType=BIGINT}
-          and
-          t.code = s.code
-    </select>
+  <select id="queryOrder" resultType="com.wnzhong.counter.bean.OrderInfo">
+    select
+      o.id,
+      o.uid,
+      o.code,
+      s.name,
+      o.direction,
+      o.type,
+      o.price,
+      o.ocount,
+      o.status,
+      o.date,
+      o.time
+    from
+      t_order o,
+      t_stock s
+    where
+      o.uid = #{Uid, jdbcType=BIGINT}
+    and
+      o.code = s.code
+  </select>
 
-    <insert id="saveOrder" parameterType="map">
-        insert into
-        t_order(
-          uid,
-          code,
-          direction,
-          type,
-          price,
-          ocount,
-          status,
-          date,
-          time
-        )
-        values (
-          #{UId},
-          #{Code},
-          #{Direction},
-          #{Type},
-          #{Price},
-          #{OCount},
-          #{Status},
-          #{Date},
-          #{Time}
-        )
-        <selectKey keyColumn="id" resultType="int" keyProperty="ID" order="AFTER">
-          select last_insert_rowid()
-        </selectKey>
-    </insert>
+  <select id="queryTrade" resultType="com.wnzhong.counter.bean.TradeInfo">
+    select
+      t.id,
+      t.uid,
+      t.code,
+      s.name,
+      t.direction,
+      t.price,
+      t.tcount,
+      t.oid,
+      t.date,
+      t.time
+    from
+      t_trade t,
+      t_stock s
+    where
+      t.uid = #{Uid, jdbcType=BIGINT}
+      and
+      t.code = s.code
+  </select>
+
+  <insert id="saveOrder" parameterType="map">
+    insert into
+      t_order(
+        uid,
+        code,
+        direction,
+        type,
+        price,
+        ocount,
+        status,
+        date,
+        time
+    )
+    values (
+      #{UId},
+      #{Code},
+      #{Direction},
+      #{Type},
+      #{Price},
+      #{OCount},
+      #{Status},
+      #{Date},
+      #{Time}
+    )
+    <selectKey keyColumn="id" resultType="int" keyProperty="ID" order="AFTER">
+      select last_insert_rowid()
+    </selectKey>
+  </insert>
 
 
 </mapper>

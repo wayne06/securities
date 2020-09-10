@@ -90,6 +90,17 @@ public class DbUtil {
         return balance == null ? -1 : balance;
     }
 
+    /**
+     * @param uid
+     * @param variation 卖出为正，买入为负
+     */
+    public static void updateBalance(long uid, long variation) {
+        dbUtil.getSqlSessionTemplate().update(
+                "orderMapper.updateBalance",
+                ImmutableMap.of("Uid", uid, "Variation", variation)
+        );
+    }
+
     //********************************** 持仓 **********************************
 
     public static List<PosiInfo> getPosiList(long uid) {
@@ -105,6 +116,17 @@ public class DbUtil {
             return res;
         } else {
             return JsonUtil.fromJsonArr(posiInCache, PosiInfo.class);
+        }
+    }
+
+    public static void updateOrCreatePosi(long uid, int stockCode, long tradingVolume, long pricePerShare) {
+        PosiInfo posiInfo = getPosi(uid, stockCode);
+        if (posiInfo == null) {
+            insertPosi(uid, stockCode, tradingVolume, pricePerShare);
+        } else {
+            posiInfo.setCount(posiInfo.getCount() + tradingVolume);
+            posiInfo.setCost(posiInfo.getCount() + pricePerShare * tradingVolume);
+            updatePosi(posiInfo);
         }
     }
 
