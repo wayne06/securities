@@ -119,6 +119,14 @@ public class DbUtil {
         }
     }
 
+    /**
+     * 1. 持仓中没有该股票，则创建持仓
+     * 2. 持仓中有该股票，则更新持仓
+     * @param uid
+     * @param stockCode
+     * @param tradingVolume 买入为正，卖出为负
+     * @param pricePerShare
+     */
     public static void updateOrCreatePosi(long uid, int stockCode, long tradingVolume, long pricePerShare) {
         PosiInfo posiInfo = getPosi(uid, stockCode);
         if (posiInfo == null) {
@@ -128,6 +136,33 @@ public class DbUtil {
             posiInfo.setCost(posiInfo.getCount() + pricePerShare * tradingVolume);
             updatePosi(posiInfo);
         }
+    }
+
+    private static void updatePosi(PosiInfo posiInfo) {
+        dbUtil.getSqlSessionTemplate().update(
+                "orderMapper.updatePosi",
+                ImmutableMap.of("Uid", posiInfo.getUid(),
+                        "StockCode", posiInfo.getCode(),
+                        "TradingVolume", posiInfo.getCount(),
+                        "Cost", posiInfo.getCost())
+        );
+    }
+
+    private static void insertPosi(long uid, int stockCode, long tradingVolume, long pricePerShare) {
+        dbUtil.getSqlSessionTemplate().insert(
+                "orderMapper.insertPosi",
+                ImmutableMap.of("Uid", uid,
+                        "StockCode", stockCode,
+                        "TradingVolume", tradingVolume,
+                        "Cost", pricePerShare * tradingVolume)
+        );
+    }
+
+    private static PosiInfo getPosi(long uid, int stockCode) {
+        return dbUtil.getSqlSessionTemplate().selectOne(
+                "orderMapper.queryPosi",
+                ImmutableMap.of("Uid", uid, "StockCode", stockCode)
+        );
     }
 
     //********************************** 委托 **********************************

@@ -21,8 +21,17 @@ cacheexpire:
     account: 3600
     order: 36000
 
-# 机器位置：机房id，机柜id
+# 机器位置：
 counter:
+    # 会员号
     id: 1000
+
+    # 机房id，机柜id
     dataCenterId: 0
     workerId: 0
+
+    # 编码解码器
+    checksum: thirdpart.checksum.ByteCheckSum
+    bodycodec: thirdpart.codec.BodyCodecImpl
+
+

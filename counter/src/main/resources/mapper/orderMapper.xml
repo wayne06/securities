@@ -35,7 +35,38 @@
       p.uid = #{Uid, jdbcType=BIGINT}
       and
       p.code = s.code
+      <if test="StockCode != null and StockCode != ''">
+        and s.code = #{StockCode, jdbcType=INTEGER}
+      </if>
    </select>
+
+  <insert id="insertPosi" parameterType="map">
+    insert into
+      t_posi(
+        uid,
+        code,
+        cost,
+        count
+      )
+      values (
+        #{Uid},
+        #{StockCode},
+        #{Cost},
+        #{TradingVolume}
+      )
+  </insert>
+
+  <update id="updatePosi" parameterType="map">
+    update
+      t_posi
+    set
+      cost = #{Cost, jdbcType=BIGINT},
+      count = #{TradingVolume, jdbcType=BIGINT}
+    where
+      uid = #{Uid, jdbcType=BIGINT}
+      and
+      code = #{StockCode, jdbcType=INTEGER}
+  </update>
 
   <select id="queryOrder" resultType="com.wnzhong.counter.bean.OrderInfo">
     select
