@@ -1,4 +1,4 @@
-package thirdpart;
+package thirdpart.codec;
 
 import com.alipay.remoting.exception.CodecException;
 

@@ -4,7 +4,7 @@ import com.alipay.remoting.exception.CodecException;
 import com.wnzhong.gateway.bean.OrderCmdContainer;
 import lombok.AllArgsConstructor;
 import lombok.extern.log4j.Log4j2;
-import thirdpart.BodyCodec;
+import thirdpart.codec.BodyCodec;
 import thirdpart.bean.CommonMsg;
 import thirdpart.order.OrderCmd;
 
