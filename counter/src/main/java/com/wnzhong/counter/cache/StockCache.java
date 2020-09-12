@@ -34,7 +34,7 @@ public class StockCache {
 
         // 1. 从数据库读取股票数据
         List<Map<String, Object>> result = DbUtil.getStockList();
-        System.out.println(result);
+        //System.out.println(result);
         if (CollectionUtils.isEmpty(result)) {
             log.error("No stock data find in db.");
             return;

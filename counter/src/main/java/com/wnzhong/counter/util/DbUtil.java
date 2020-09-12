@@ -15,13 +15,12 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
-import thirdparty.order.OrderCmd;
-import thirdparty.order.OrderStatus;
+import thirdpart.order.OrderCmd;
+import thirdpart.order.OrderStatus;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class DbUtil {

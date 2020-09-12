@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import thirdparty.order.CmdType;
-import thirdparty.order.OrderCmd;
-import thirdparty.order.OrderDirection;
-import thirdparty.order.OrderType;
+import thirdpart.order.CmdType;
+import thirdpart.order.OrderCmd;
+import thirdpart.order.OrderDirection;
+import thirdpart.order.OrderType;
 
 @RestController
 @RequestMapping("/api")

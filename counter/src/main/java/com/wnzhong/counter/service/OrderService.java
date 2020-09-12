@@ -3,7 +3,7 @@ package com.wnzhong.counter.service;
 import com.wnzhong.counter.bean.OrderInfo;
 import com.wnzhong.counter.bean.PosiInfo;
 import com.wnzhong.counter.bean.TradeInfo;
-import thirdparty.order.OrderCmd;
+import thirdpart.order.OrderCmd;
 
 import java.util.List;
 

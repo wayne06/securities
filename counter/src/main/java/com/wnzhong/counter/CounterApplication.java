@@ -5,7 +5,7 @@ import com.wnzhong.counter.util.DbUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import thirdparty.uuid.MyUuid;
+import thirdpart.uuid.MyUuid;
 
 import javax.annotation.PostConstruct;
 

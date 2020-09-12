@@ -1,6 +1,6 @@
 package com.wnzhong.gateway.bean;
 
-import com.wnzhong.gateway.bean.handler.ConnHandler;
+import com.wnzhong.gateway.handler.ConnHandler;
 import io.vertx.core.Vertx;
 import io.vertx.core.net.NetServer;
 import lombok.Getter;
@@ -10,8 +10,8 @@ import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Element;
 import org.dom4j.io.SAXReader;
-import thirdpart.codec.BodyCodec;
 import thirdpart.checksum.CheckSum;
+import thirdpart.codec.BodyCodec;
 
 @Getter
 @Log4j2
@@ -36,7 +36,7 @@ public class GatewayConfig {
         Document document = saxReader.read(fileName);
         Element rootElement = document.getRootElement();
         id = Short.parseShort(rootElement.element("id").getText());
-        recvPort = Integer.parseInt(rootElement.element("recvPort").getText());
+        recvPort = Integer.parseInt(rootElement.element("recvport").getText());
         log.info("Gateway ID: {}, PORT: {}", id, recvPort);
     }
 

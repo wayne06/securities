@@ -3,18 +3,23 @@ package com.wnzhong.counter.service;
 import com.wnzhong.counter.bean.OrderInfo;
 import com.wnzhong.counter.bean.PosiInfo;
 import com.wnzhong.counter.bean.TradeInfo;
+import com.wnzhong.counter.config.GatewayConnection;
 import com.wnzhong.counter.util.DbUtil;
 import com.wnzhong.counter.util.IDConverter;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import thirdparty.order.OrderCmd;
-import thirdparty.order.OrderDirection;
+import thirdpart.order.OrderCmd;
+import thirdpart.order.OrderDirection;
 
 import java.util.List;
 
 @Service
 @Log4j2
 public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private GatewayConnection gatewayConnection;
 
     @Override
     public Long getBalance(long uid) {
@@ -59,9 +64,8 @@ public class OrderServiceImpl implements OrderService {
             IDConverter.combineInt2Long(orderCmd.mid, oid);
 
             // c.打包委托：orderCmd -> 网关模版数据commonMsg -> TCP数据流
-
-
             // d. 发送数据
+            gatewayConnection.sendOrder(orderCmd);
 
             log.info(orderCmd);
             return true;

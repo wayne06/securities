@@ -8,7 +8,7 @@ import com.wnzhong.counter.util.JsonUtil;
 import com.wnzhong.counter.util.TimeUtil;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
-import thirdparty.uuid.MyUuid;
+import thirdpart.uuid.MyUuid;
 
 import java.util.Date;
 

@@ -95,14 +95,17 @@
             handlePrice() {
                 if (this.direction === constants.SELL) {
                     let posiArr = this.$store.state.posiData;
+                    console.log(posiArr)
                     for (let i = 0, length = posiArr.length; i < length; i++) {
                         if (posiArr[i].code == this.code) {
                             this.affordCount = posiArr[i].count;
+                            console.log(this.affordCount);
                         }
                     }
                 } else { // 总资金/委托价格 向下取整
                     this.affordCount = parseInt(
                         (this.$store.state.balanceData / constants.MULTI_FACTOR) / this.price);
+                    console.log(this.affordCount);
                 }
             }
         },

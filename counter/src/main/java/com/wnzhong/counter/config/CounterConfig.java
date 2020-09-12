@@ -1,11 +1,13 @@
 package com.wnzhong.counter.config;
 
+import io.vertx.core.Vertx;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import thirdparty.checksum.CheckSum;
-import thirdparty.codec.BodyCodec;
+import thirdpart.checksum.CheckSum;
+import thirdpart.codec.BodyCodec;
+import thirdpart.codec.MsgCodec;
 
 import javax.annotation.PostConstruct;
 
@@ -27,6 +29,19 @@ public class CounterConfig {
     @Value("${counter.workerId}")
     private long workerId;
 
+    //////////////////////////////网关相关配置///////////////////////////////////
+
+    @Value("${counter.sendIp}")
+    private String sendIp;
+
+    @Value("${counter.sendPort}")
+    private int sendPort;
+
+    @Value(("${counter.gatewayId}"))
+    private short gatewayId;
+
+    private Vertx vertx = Vertx.vertx();
+
     //////////////////////////////编码相关配置///////////////////////////////////
 
     @Value("${counter.checksum}")
@@ -35,9 +50,14 @@ public class CounterConfig {
     @Value("${counter.bodycodec}")
     private String bodyCodecClass;
 
+    @Value("${counter.msgcodec}")
+    private String msgCodecClass;
+
     private CheckSum checksum;
 
     private BodyCodec bodyCodec;
+
+    private MsgCodec msgCodec;
 
     @PostConstruct
     private void init() {
@@ -47,6 +67,8 @@ public class CounterConfig {
             checksum = (CheckSum) clazz.getDeclaredConstructor().newInstance();
             clazz = Class.forName(bodyCodecClass);
             bodyCodec = (BodyCodec) clazz.getDeclaredConstructor().newInstance();
+            clazz = Class.forName(msgCodecClass);
+            msgCodec = (MsgCodec) clazz.getDeclaredConstructor().newInstance();
         } catch (Exception e) {
             log.error("Counter config init error: ", e);
         }

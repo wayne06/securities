@@ -26,6 +26,9 @@ counter:
     # 会员号
     id: 1000
 
+    # 网关id
+    gatewayId: 1001
+
     # 机房id，机柜id
     dataCenterId: 0
     workerId: 0
@@ -33,5 +36,10 @@ counter:
     # 编码解码器
     checksum: thirdpart.checksum.ByteCheckSum
     bodycodec: thirdpart.codec.BodyCodecImpl
+    msgcodec: thirdpart.codec.MsgCodecImpl
+
+    # TCP直连网关信息
+    sendIp: 127.0.0.1
+    sendPort: 8091
 
 

@@ -15,7 +15,7 @@
     update
       t_user
     set
-      balance = balance + #{variation, jdbcType=BIGIN}
+      balance = balance + #{variation, jdbcType=BIGINT}
     where
       uid = #{UId, jdbcType=BIGINT}
   </select>
