@@ -46,6 +46,7 @@ public class GatewayConnection {
         commonMsg.setStatus(NORMAL);
         commonMsg.setMsgNo(MyUuid.getInstance().getUuid());
         commonMsg.setBody(data);
+
         tcpDirectSender.send(counterConfig.getMsgCodec().encodeToBuffer(commonMsg));
     }
 

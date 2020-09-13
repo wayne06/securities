@@ -3,6 +3,8 @@ package thirdpart.codec;
 import com.alipay.remoting.exception.CodecException;
 import com.alipay.remoting.serialization.SerializerManager;
 
+import java.util.Arrays;
+
 public class BodyCodecImpl implements BodyCodec {
     @Override
     public <T> byte[] serialize(T object) throws CodecException {
@@ -16,4 +18,18 @@ public class BodyCodecImpl implements BodyCodec {
     public <T> T deserialize(byte[] bytes, Class<T> clazz) throws CodecException {
         return SerializerManager.getSerializer(SerializerManager.Hessian2).deserialize(bytes, clazz.getName());
     }
+
+
+    public static void main(String[] args) throws CodecException {
+        User user = new User("wayne", 18);
+        byte[] userBytes = new BodyCodecImpl().serialize(user);
+        System.out.println(Arrays.toString(userBytes));
+
+        User user1 = new BodyCodecImpl().deserialize(userBytes, User.class);
+        System.out.println(user1);
+
+
+
+    }
+
 }

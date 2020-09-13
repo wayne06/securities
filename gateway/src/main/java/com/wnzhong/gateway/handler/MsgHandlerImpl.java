@@ -16,9 +16,9 @@ public class MsgHandlerImpl implements MsgHandler {
 
     @Override
     public void onCounterData(CommonMsg commonMsg) {
+        OrderCmd orderCmd;
         try {
-            OrderCmd orderCmd = bodyCodec.deserialize(commonMsg.getBody(), OrderCmd.class);
-            System.out.println(orderCmd);
+            orderCmd = bodyCodec.deserialize(commonMsg.getBody(), OrderCmd.class);
             log.info("Recv cmd: {}", orderCmd);
             // 生产中数据量大，万不可使用 log.info；使用 log.debug 的正确方式如下：
             //if (log.isDebugEnabled()) {

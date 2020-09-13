@@ -61,7 +61,7 @@ public class OrderServiceImpl implements OrderService {
                 return false;
             }
             // b.组装全局ID：通过其知道该委托来自哪个柜台 long[柜台ID，委托ID]
-            IDConverter.combineInt2Long(orderCmd.mid, oid);
+            orderCmd.oid = IDConverter.combineInt2Long(orderCmd.mid, oid);
 
             // c.打包委托：orderCmd -> 网关模版数据commonMsg -> TCP数据流
             // d. 发送数据
