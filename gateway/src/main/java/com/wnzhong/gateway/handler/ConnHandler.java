@@ -54,43 +54,36 @@ public class ConnHandler implements Handler<NetSocket> {
                     // b. 读取数据
                     byte[] bodyBytes = buffer.getBytes();
                     // c. 组装对象
-                    CommonMsg commonMsg;
-                    log.info("checksum in msg: " + checkSum);
-                    log.info("checksum by calculating : " + gatewayConfig.getCheckSum().getSum(bodyBytes));
                     if (checkSum != gatewayConfig.getCheckSum().getSum(bodyBytes)) {
                         log.error("Illegal byte body from client: {}", netSocket.remoteAddress());
                         return;
-                    } else {
-                        if (msgDst != gatewayConfig.getId()) {
-                            log.error("Incorrect msgDst: {} from client: {}", msgDst, netSocket.remoteAddress());
-                            return;
-                        }
-                        commonMsg = new CommonMsg();
-                        commonMsg.setBodyLength(bodyBytes.length);
-                        commonMsg.setChecksum(checkSum);
-                        commonMsg.setMsgSrc(msgSrc);
-                        commonMsg.setMsgDst(msgDst);
-                        commonMsg.setMsgType(msgType);
-                        commonMsg.setStatus(status);
-                        commonMsg.setMsgNo(packetNo);
-                        commonMsg.setBody(bodyBytes);
-                        commonMsg.setTimestamp(System.currentTimeMillis());
-
-                        log.info(commonMsg);
-
-                        msgHandler.onCounterData(commonMsg);
-
-                        // d. 恢复现场
-                        bodyLength = -1;
-                        checkSum = -1;
-                        msgSrc = -1;
-                        msgDst = -1;
-                        msgType = -1;
-                        status = -1;
-                        packetNo = -1;
-                        parser.fixedSizeMode(PACKET_HEADER_LENGTH);
                     }
+                    if (msgDst != gatewayConfig.getId()) {
+                        log.error("Incorrect msgDst: {} from client: {}", msgDst, netSocket.remoteAddress());
+                        return;
+                    }
+                    CommonMsg commonMsg = new CommonMsg();
+                    commonMsg.setBodyLength(bodyBytes.length);
+                    commonMsg.setChecksum(checkSum);
+                    commonMsg.setMsgSrc(msgSrc);
+                    commonMsg.setMsgDst(msgDst);
+                    commonMsg.setMsgType(msgType);
+                    commonMsg.setStatus(status);
+                    commonMsg.setMsgNo(packetNo);
+                    commonMsg.setBody(bodyBytes);
+                    commonMsg.setTimestamp(System.currentTimeMillis());
 
+                    msgHandler.onCounterData(commonMsg);
+
+                    // d. 恢复现场
+                    bodyLength = -1;
+                    checkSum = -1;
+                    msgSrc = -1;
+                    msgDst = -1;
+                    msgType = -1;
+                    status = -1;
+                    packetNo = -1;
+                    parser.fixedSizeMode(PACKET_HEADER_LENGTH);
                 }
             }
         });

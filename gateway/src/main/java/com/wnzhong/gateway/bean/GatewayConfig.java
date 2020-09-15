@@ -38,6 +38,8 @@ public class GatewayConfig {
         id = Short.parseShort(rootElement.element("id").getText());
         recvPort = Integer.parseInt(rootElement.element("recvport").getText());
         log.info("Gateway ID: {}, PORT: {}", id, recvPort);
+
+        //TODO 柜台列表，数据库连接
     }
 
     public void startup() {
