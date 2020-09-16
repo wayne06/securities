@@ -1,8 +1,7 @@
 package com.wnzhong.counter.util;
 
 /**
- *
- * 长整型高位用柜台ID，低位部分用这笔委托在数据库中的主键
+ * 拼接两个整型为一个长整型，和拆分一个长整型为两个整型
  */
 public class IDConverter {
 
