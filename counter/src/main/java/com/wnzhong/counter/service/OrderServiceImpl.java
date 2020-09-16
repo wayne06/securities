@@ -45,10 +45,11 @@ public class OrderServiceImpl implements OrderService {
     public boolean sendOrder(OrderCmd orderCmd) {
         // 1.入库
         int oid = DbUtil.saveOrder(orderCmd);
+
+        // 2.发送到网关
         if (oid < 0) {
             return false;
         } else {
-            // 2.发送到网关
             // a.调整资金、持仓数据
             if (orderCmd.direction == OrderDirection.BUY) {
                 // 减资金
@@ -61,10 +62,11 @@ public class OrderServiceImpl implements OrderService {
                 return false;
             }
             // b.组装全局ID：通过其知道该委托来自哪个柜台 long[柜台ID，委托ID]
+            // 长整型高位用柜台ID，低位部分用这笔委托在数据库中的主键
             orderCmd.oid = IDConverter.combineInt2Long(orderCmd.mid, oid);
 
             // c.打包委托：orderCmd -> 网关模版数据commonMsg -> TCP数据流
-            // d. 发送数据
+            // d.发送数据
             gatewayConnection.sendOrder(orderCmd);
 
             log.info(orderCmd);

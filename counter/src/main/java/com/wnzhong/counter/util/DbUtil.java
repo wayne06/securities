@@ -132,7 +132,7 @@ public class DbUtil {
             insertPosi(uid, stockCode, tradingVolume, pricePerShare);
         } else {
             posiInfo.setCount(posiInfo.getCount() + tradingVolume);
-            posiInfo.setCost(posiInfo.getCount() + pricePerShare * tradingVolume);
+            posiInfo.setCost(posiInfo.getCost() + pricePerShare * tradingVolume);
             updatePosi(posiInfo);
         }
     }

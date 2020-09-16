@@ -1,5 +1,9 @@
 package com.wnzhong.counter.util;
 
+/**
+ *
+ * 长整型高位用柜台ID，低位部分用这笔委托在数据库中的主键
+ */
 public class IDConverter {
 
     /**
