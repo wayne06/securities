@@ -1,6 +1,7 @@
 package com.wnzhong.counter.config;
 
 import com.alipay.remoting.exception.CodecException;
+import io.vertx.core.buffer.Buffer;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
@@ -30,24 +31,26 @@ public class GatewayConnection {
     }
 
     public void sendOrder(OrderCmd orderCmd) {
-        byte[] data = null;
+        byte[] data;
         try {
             data = counterConfig.getBodyCodec().serialize(orderCmd);
         } catch (CodecException e) {
             log.error("OrderCmd [{}] serializing error", orderCmd, e);
             return;
         }
-        CommonMsg commonMsg = new CommonMsg();
-        commonMsg.setBodyLength(data.length);
-        commonMsg.setChecksum(counterConfig.getChecksum().getSum(data));
-        commonMsg.setMsgSrc(counterConfig.getId());
-        commonMsg.setMsgDst(counterConfig.getGatewayId());
-        commonMsg.setMsgType(COUNTER_NEW_ORDER);
-        commonMsg.setStatus(NORMAL);
-        commonMsg.setMsgNo(MyUuid.getInstance().getUuid());
-        commonMsg.setBody(data);
 
-        tcpDirectSender.send(counterConfig.getMsgCodec().encodeToBuffer(commonMsg));
+        // orderCmd -> 网关模版数据 commonMsg
+        CommonMsg commonMsg = genMsg(data,
+                                     counterConfig.getId(),
+                                     counterConfig.getGatewayId(),
+                                     COUNTER_NEW_ORDER,
+                                     NORMAL,
+                                     MyUuid.getInstance().getUuid());
+
+        // commonMsg -> TCP数据流
+        Buffer buffer = counterConfig.getMsgCodec().encodeToBuffer(commonMsg);
+
+        tcpDirectSender.send(buffer);
     }
 
     /**

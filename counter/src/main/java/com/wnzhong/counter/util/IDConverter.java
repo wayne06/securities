@@ -6,7 +6,7 @@ package com.wnzhong.counter.util;
 public class IDConverter {
 
     /**
-     * 拼接长整型：high左移32位，然后与low做或运算
+     * 拼接长整型：high左移32位，low作为低位的32位
      * @param high
      * @param low
      * @return

@@ -32,30 +32,11 @@ public class TcpDirectSender {
      */
     private volatile NetSocket netSocket;
 
-    public void startup() {
-        vertx.createNetClient().connect(port, ip, new ClientConnHandler());
-
-        new Thread(() -> {
-            while (true) {
-                try {
-                    Buffer buffer = dataCache.poll(5, TimeUnit.SECONDS);
-                    if (buffer != null && buffer.length() > 0 && netSocket != null) {
-                        // 真正的发送代码
-                        netSocket.write(buffer);
-                    }
-                } catch (InterruptedException e) {
-                    log.error("Message sending failed..Continue", e.getCause());
-                }
-            }
-        }).start();
-    }
-
     /**
      * 如果每来一次数据就用 socket.write，那么会造成：
      * 1. 无法做流量控制
      * 2. 数据有可能会阻塞在网卡里，这种阻塞 socket 不会告知外部，若阻塞太多还会导致部分包丢失
-     *
-     * 解决方式：在收到委托和发送委托之间增加缓存，让 socket去缓存中去数据
+     * 解决方式：在收到委托和发送委托之间增加缓存，让 socket去缓存中取数据
      */
     private final BlockingQueue<Buffer> dataCache = new LinkedBlockingDeque<>();
 
@@ -66,6 +47,26 @@ public class TcpDirectSender {
      */
     public boolean send(Buffer buffer) {
         return dataCache.offer(buffer);
+    }
+
+    public void startup() {
+        // 创建客户端连接
+        vertx.createNetClient().connect(port, ip, new ClientConnHandler());
+
+        // 真正的把报文发送到柜台的逻辑单独开一个线程来做
+        new Thread(() -> {
+            while (true) {
+                try {
+                    Buffer buffer = dataCache.poll(5, TimeUnit.SECONDS);
+                    if (buffer != null && buffer.length() > 0 && netSocket != null) {
+                        // 真正的发送报文代码
+                        netSocket.write(buffer);
+                    }
+                } catch (InterruptedException e) {
+                    log.error("Message sending failed..Continue", e.getCause());
+                }
+            }
+        }).start();
     }
 
     private class ClientConnHandler implements Handler<AsyncResult<NetSocket>> {
