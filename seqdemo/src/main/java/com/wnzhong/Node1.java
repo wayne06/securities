@@ -41,7 +41,7 @@ public class Node1 {
                 .withRaftDataPath(dataPath)
                 .withServerAddress(new Endpoint(ip, port))
                 .config();
-
+        // PlacementDriverOptions 是给一个集群中有多个 raft 集群的情况来使用的，当前只有一个 raft 集群，所以 withFake(true)
         final PlacementDriverOptions placementDriverOptions = PlacementDriverOptionsConfigured
                 .newConfigured()
                 .withFake(true)
