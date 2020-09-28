@@ -9,15 +9,25 @@ import com.alipay.sofa.jraft.rhea.options.configured.RheaKVStoreOptionsConfigure
 import com.alipay.sofa.jraft.rhea.options.configured.StoreEngineOptionsConfigured;
 import com.alipay.sofa.jraft.rhea.storage.StorageType;
 import com.alipay.sofa.jraft.util.Endpoint;
+import com.alipay.sofa.rpc.config.ConsumerConfig;
+import com.alipay.sofa.rpc.listener.ChannelListener;
+import com.alipay.sofa.rpc.transport.AbstractChannel;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.wnzhong.seq.bean.FetchTask;
 import com.wnzhong.seq.bean.Node;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import thirdpart.codec.BodyCodec;
+import thirdpart.fetchserv.FetchService;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Timer;
 
 @Log4j2
 @ToString
@@ -40,14 +50,14 @@ public class SeqConfig {
     private String serverList;
 
     /**
-     * 配置文件的文件名
+     * 下游网关地址
      */
-    @NonNull
-    private String fileName;
+    private String fetchUrls;
 
-    @Getter
-    private Node node;
-
+    /**
+     * 启动排队机
+     * @throws IOException
+     */
     public void startup() throws IOException {
         // 1.读取配置文件
         initConfig();
@@ -59,9 +69,73 @@ public class SeqConfig {
         startupFetch();
     }
 
+    ////////////////////////////////////////////////////抓取逻辑//////////////////////////////////////////////////////////
+
+    /**
+     * 保存所有到网关的连接（不是在配置项中读取，打印时排除）
+     */
+    @ToString.Exclude
+    @Getter
+    private Map<String, FetchService> fetchServiceMap = Maps.newConcurrentMap();
+
+    /**
+     * 解包功能（打包数据时使用）
+     */
+    @NonNull
+    @ToString.Exclude
+    @Getter
+    private BodyCodec bodyCodec;
+
+    /**
+     * 1. 从哪些网关抓取：将下游网关地址定义在配置文件中
+     * 2. 通信格式：采用rpc通讯方式，需要上下游有一个定义的接口，在thirdpart中
+     */
     private void startupFetch() {
+        // 1.建立所有到网关的连接
+        for (String fetchUrl : fetchUrls.split(";")) {
+            ConsumerConfig<FetchService> consumerConfig = new ConsumerConfig<FetchService>()
+                    .setInterfaceId(FetchService.class.getName())  // 通信接口
+                    .setProtocol("bolt")                           // RPC通信协议
+                    .setTimeout(5000)                              // 超时时间
+                    .setDirectUrl(fetchUrl);                       // 直连地址
+            consumerConfig.setOnConnect(Lists.newArrayList(new FetchChannelListener(consumerConfig)));  // 绑定监听器
+            // 根据实际使用情况，客户端在第一次连上Provider的时候，onConnected()方法不会执行，只有重连时才会进入其中，所以要显示put
+            fetchServiceMap.put(fetchUrl, consumerConfig.refer());
+        }
+        // 2.启动定时任务，到每个网关收取数据
+        new Timer().schedule(new FetchTask(this), 5000, 1000);
+
 
     }
+
+    @RequiredArgsConstructor
+    private class FetchChannelListener implements ChannelListener {
+
+        @NonNull
+        private ConsumerConfig<FetchService> consumerConfig;
+
+        @Override
+        public void onConnected(AbstractChannel channel) {
+            String remoteAddr = channel.remoteAddress().toString();
+            log.info("Connected to gateway : {}", remoteAddr);
+            fetchServiceMap.put(remoteAddr, consumerConfig.refer());
+        }
+
+        @Override
+        public void onDisconnected(AbstractChannel channel) {
+            String remoteAddr = channel.remoteAddress().toString();
+            log.info("Disconnected to gateway : {}", remoteAddr);
+            fetchServiceMap.remove(remoteAddr);
+        }
+    }
+
+    ////////////////////////////////////////////////////启动DB//////////////////////////////////////////////////////////
+
+    /**
+     * KVStore节点
+     */
+    @Getter
+    private Node node;
 
     private void startSeqDbCluster() {
         final PlacementDriverOptions placementDriverOptions = PlacementDriverOptionsConfigured
@@ -89,6 +163,14 @@ public class SeqConfig {
         log.info("Start seq node successfully on port : {}", serverUrl.split(":")[1]);
     }
 
+    ////////////////////////////////////////////////////读取配置//////////////////////////////////////////////////////////
+
+    /**
+     * 配置文件的文件名
+     */
+    @NonNull
+    private String fileName;
+
     private void initConfig() throws IOException {
         Properties properties = new Properties();
         properties.load(Object.class.getResourceAsStream("/" + fileName));
@@ -96,9 +178,12 @@ public class SeqConfig {
         dataPath = properties.getProperty("datapath");
         serverUrl = properties.getProperty("serverurl");
         serverList = properties.getProperty("serverlist");
+        fetchUrls = properties.getProperty("fetchurls");
 
         log.info("Read config: {}", this);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 
 }
