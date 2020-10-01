@@ -1,7 +1,6 @@
 package com.wnzhong.seq.bean;
 
 import com.google.common.collect.Lists;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import com.wnzhong.seq.config.SeqConfig;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,13 @@ import thirdpart.order.OrderCmd;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.stream.Collectors;
+import java.util.function.Consumer;
 
+/**
+ * 从 map 中拿到所有网关的链接，遍历链接，并从网关中逐一捞取数据，获取所有数据后再定序
+ *
+ * @author wayne
+ */
 @Log4j2
 @RequiredArgsConstructor
 public class FetchTask extends TimerTask {
@@ -25,7 +29,7 @@ public class FetchTask extends TimerTask {
 
     @Override
     public void run() {
-        // 遍历网关
+        // 1.遍历主节点（并不是所有节点都要查取数据，只需查主节点）
         if (!seqConfig.getNode().isLeader()) {
             return;
         }
@@ -34,14 +38,14 @@ public class FetchTask extends TimerTask {
             return;
         }
 
-        // 获取数据
+        // 2.获取数据
         List<OrderCmd> cmds = collectAllOrders(fetchServiceMap);
         if (CollectionUtils.isEmpty(cmds)) {
             return;
         }
         log.info(cmds);
 
-        // 对数据进行排序：时间优先；价格优先；量优先
+        // 3.对数据进行排序：时间优先；价格优先；量优先
         cmds.sort((o1, o2) -> {
             int res = compareTime(o1, o2);
             if (res != 0) {
@@ -70,6 +74,7 @@ public class FetchTask extends TimerTask {
     }
 
     private List<OrderCmd> collectAllOrders(Map<String, FetchService> fetchServiceMap) {
+        //这种写法存在的问题：性能不可控，调试不方便，可读性差
         //List<OrderCmd> res = fetchServiceMap
         //        .values()
         //        .stream()
@@ -80,12 +85,11 @@ public class FetchTask extends TimerTask {
 
         List<OrderCmd> res = Lists.newArrayList();
         fetchServiceMap.values().forEach(t -> {
-
+            List<OrderCmd> orderCmds = t.fetchData();
+            if (CollectionUtils.isNotEmpty(orderCmds)) {
+                res.addAll(orderCmds);
+            }
         });
-
-
-
-
         return res;
     }
 }
