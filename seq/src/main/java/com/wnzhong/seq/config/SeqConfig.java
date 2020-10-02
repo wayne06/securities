@@ -73,6 +73,8 @@ public class SeqConfig {
 
     /**
      * 保存所有到网关的连接（不是在配置项中读取，打印时排除）
+     * key 为连接网关的地址和端口，value 为上下游通讯的接口
+     *
      */
     @ToString.Exclude
     @Getter
@@ -88,17 +90,22 @@ public class SeqConfig {
 
     /**
      * 1. 从哪些网关抓取：将下游网关地址定义在配置文件中
-     * 2. 通信格式：采用rpc通讯方式，需要上下游有一个定义的接口，在thirdpart中
+     * 2. 通信格式：采用rpc通讯方式，需要上下游有一个定义的接口，在thirdpart中新建通讯接口 FetchService
      */
     private void startupFetch() {
         // 1.建立所有到网关的连接
         for (String fetchUrl : fetchUrls.split(";")) {
             ConsumerConfig<FetchService> consumerConfig = new ConsumerConfig<FetchService>()
-                    .setInterfaceId(FetchService.class.getName())  // 通信接口
-                    .setProtocol("bolt")                           // RPC通信协议
-                    .setTimeout(5000)                              // 超时时间
-                    .setDirectUrl(fetchUrl);                       // 直连地址
-            consumerConfig.setOnConnect(Lists.newArrayList(new FetchChannelListener(consumerConfig)));  // 绑定监听器
+                    // 通信接口
+                    .setInterfaceId(FetchService.class.getName())
+                    // RPC通信协议
+                    .setProtocol("bolt")
+                    // 超时时间
+                    .setTimeout(5000)
+                    // 直连地址
+                    .setDirectUrl(fetchUrl);
+            // 绑定监听器
+            consumerConfig.setOnConnect(Lists.newArrayList(new FetchChannelListener(consumerConfig)));
             // 根据实际使用情况，客户端在第一次连上Provider的时候，onConnected()方法不会执行，只有重连时才会进入其中，所以要显示put
             fetchServiceMap.put(fetchUrl, consumerConfig.refer());
         }

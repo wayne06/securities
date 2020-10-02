@@ -13,7 +13,7 @@ import thirdpart.order.OrderCmd;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * 从 map 中拿到所有网关的链接，遍历链接，并从网关中逐一捞取数据，获取所有数据后再定序
@@ -38,7 +38,7 @@ public class FetchTask extends TimerTask {
             return;
         }
 
-        // 2.获取数据
+        // 2.获取数据（map中的所有 order 数据）
         List<OrderCmd> cmds = collectAllOrders(fetchServiceMap);
         if (CollectionUtils.isEmpty(cmds)) {
             return;
@@ -75,9 +75,7 @@ public class FetchTask extends TimerTask {
 
     private List<OrderCmd> collectAllOrders(Map<String, FetchService> fetchServiceMap) {
         //这种写法存在的问题：性能不可控，调试不方便，可读性差
-        //List<OrderCmd> res = fetchServiceMap
-        //        .values()
-        //        .stream()
+        //List<OrderCmd> res = fetchServiceMap.values().stream()
         //        .map(t -> t.fetchData())
         //        .filter(msg -> CollectionUtils.isEmpty(msg))
         //        .flatMap(List::stream)
