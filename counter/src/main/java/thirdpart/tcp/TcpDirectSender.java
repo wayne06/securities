@@ -73,7 +73,7 @@ public class TcpDirectSender {
         @Override
         public void handle(AsyncResult<NetSocket> netSocketAsyncResult) {
             if (netSocketAsyncResult.succeeded()) {
-                log.info("Connected to {} : {} ", ip, port);
+                log.info("Connected to Gateway - {} : {} ", ip, port);
                 netSocket = netSocketAsyncResult.result();
 
                 netSocket.closeHandler(close -> {

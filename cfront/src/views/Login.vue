@@ -74,6 +74,9 @@
                 this.$refs[formName].validate(valid => {
                     if (valid) {
                         this.logged = true;
+
+                        console.log("encrypted pw - " + encryptMD5("12345"))
+
                         login({
                             uid: this.loginForm.uid,
                             password: encryptMD5(this.loginForm.password),

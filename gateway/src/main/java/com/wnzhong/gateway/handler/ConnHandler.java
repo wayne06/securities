@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import thirdpart.bean.CommonMsg;
 
+
 @RequiredArgsConstructor
 @Log4j2
 public class ConnHandler implements Handler<NetSocket> {
