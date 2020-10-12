@@ -111,8 +111,6 @@ public class SeqConfig {
         }
         // 2.启动定时任务，到每个网关收取数据
         new Timer().schedule(new FetchTask(this), 5000, 1000);
-
-
     }
 
     @RequiredArgsConstructor
@@ -191,6 +189,5 @@ public class SeqConfig {
     }
 
     //////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 
 }
