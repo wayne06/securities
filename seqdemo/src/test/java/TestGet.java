@@ -35,6 +35,7 @@ public class TestGet {
 
         final RheaKVStoreOptions rheaKVStoreOptions = RheaKVStoreOptionsConfigured
                 .newConfigured()
+                //todo: 是否需要下面这一句？
                 .withInitialServerList(serverList)
                 .withPlacementDriverOptions(placementDriverOptions)
                 .config();

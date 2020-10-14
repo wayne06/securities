@@ -16,6 +16,9 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.wnzhong.seq.bean.FetchTask;
 import com.wnzhong.seq.bean.Node;
+import io.vertx.core.Vertx;
+import io.vertx.core.datagram.DatagramSocket;
+import io.vertx.core.datagram.DatagramSocketOptions;
 import lombok.Getter;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -63,10 +66,34 @@ public class SeqConfig {
         initConfig();
         // 2.初始化 KVStore 集群
         startSeqDbCluster();
-        // todo 3.启动下游广播
-
-        // todo 4.初始化网关连接
+        // 3.启动下游广播
+        startMultiCast();
+        // 4.初始化网关连接
         startupFetch();
+    }
+
+    ////////////////////////////////////////////////////广播//////////////////////////////////////////////////////////
+
+    /**
+     * 广播地址的ip
+     */
+    @Getter
+    private String multicastIp;
+
+    /**
+     * 广播地址的port
+     */
+    @Getter
+    private int multicastPort;
+
+    /**
+     * 负责往外发送 UDP 包
+     */
+    @Getter
+    private DatagramSocket multicastSender;
+
+    private void startMultiCast() {
+        multicastSender = Vertx.vertx().createDatagramSocket(new DatagramSocketOptions());
     }
 
     ////////////////////////////////////////////////////抓取逻辑//////////////////////////////////////////////////////////
@@ -184,6 +211,8 @@ public class SeqConfig {
         serverUrl = properties.getProperty("serverurl");
         serverList = properties.getProperty("serverlist");
         fetchUrls = properties.getProperty("fetchurls");
+        multicastIp = properties.getProperty("multicastip");
+        multicastPort = Integer.parseInt(properties.getProperty("multicastport"));
 
         log.info("Read config: {}", this);
     }

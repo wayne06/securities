@@ -1,12 +1,17 @@
 package com.wnzhong.seq.bean;
 
+import com.alipay.sofa.jraft.util.Bits;
+import com.alipay.sofa.jraft.util.BytesUtil;
 import com.google.common.collect.Lists;
 import com.wnzhong.seq.config.SeqConfig;
+import io.vertx.core.buffer.Buffer;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang.ArrayUtils;
+import thirdpart.bean.CmdPack;
 import thirdpart.fetchserv.FetchService;
 import thirdpart.order.OrderCmd;
 import thirdpart.order.OrderDirection;
@@ -14,6 +19,7 @@ import thirdpart.order.OrderDirection;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 从 map 中拿到所有网关的链接，遍历链接，并从网关中逐一捞取数据，获取所有数据后再定序
@@ -85,8 +91,68 @@ public class FetchTask extends TimerTask {
             return res;
         });
 
-        // TODO 存储到 KVStore，发送到撮合核心
+        // TODO 4.存储到 KVStore，发送到撮合核心
+        try {
+            // 1.生成PacketNo(与下游约定的校验标准)
+            long packetNo = getPacketNoFromStore();
 
+            // 2.入库
+            CmdPack pack = new CmdPack(packetNo, cmds);
+            byte[] serialize = seqConfig.getBodyCodec().serialize(pack);
+            insertToKVStore(packetNo, serialize);
+
+            // 3.更新PacketNo+1
+            updatePacketNoInStore(packetNo);
+
+            // 4.发送
+            seqConfig.getMulticastSender().send(
+                    Buffer.buffer(serialize),
+                    seqConfig.getMulticastPort(),
+                    seqConfig.getMulticastIp(),
+                    null
+            );
+
+        } catch (Exception e) {
+            log.error("Encode cmd packet error.", e);
+        }
+    }
+
+    /**
+     * 更新packetNo
+     * @param packetNo
+     */
+    private void updatePacketNoInStore(long packetNo) {
+        final byte[] bytes = new byte[8];
+        Bits.putLong(bytes, 0, packetNo);
+        seqConfig.getNode().getRheaKVStore().put(PACKET_NO_KEY, bytes);
+    }
+
+    /**
+     * 保存数据到KVStore
+     * @param packetNo
+     * @param serialize
+     */
+    private void insertToKVStore(long packetNo, byte[] serialize) {
+        byte[] key = new byte[8];
+        Bits.putLong(key, 0, packetNo);
+
+        // put是异步操作，bPut是同步操作
+        seqConfig.getNode().getRheaKVStore().put(key, serialize);
+    }
+
+    private static final byte[] PACKET_NO_KEY = BytesUtil.writeUtf8("seq_packet_no");
+
+    /**
+     * 获取PacketNo
+     * @return
+     */
+    private long getPacketNoFromStore() {
+        final byte[] bPacketNo = seqConfig.getNode().getRheaKVStore().bGet(PACKET_NO_KEY);
+        long packetNo = 0;
+        if (ArrayUtils.isNotEmpty(bPacketNo)) {
+            packetNo = Bits.getLong(bPacketNo, 0);
+        }
+        return packetNo;
     }
 
     private int compareByVolume(OrderCmd o1, OrderCmd o2) {
