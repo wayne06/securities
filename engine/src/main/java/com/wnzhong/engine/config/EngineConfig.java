@@ -1,5 +1,6 @@
 package com.wnzhong.engine.config;
 
+import com.alipay.remoting.exception.CodecException;
 import com.alipay.sofa.jraft.rhea.client.DefaultRheaKVStore;
 import com.alipay.sofa.jraft.rhea.client.RheaKVStore;
 import com.alipay.sofa.jraft.rhea.options.PlacementDriverOptions;
@@ -11,6 +12,7 @@ import com.alipay.sofa.jraft.rhea.options.configured.RheaKVStoreOptionsConfigure
 import com.wnzhong.engine.bean.CmdPacketQueue;
 import com.wnzhong.engine.core.EngineApi;
 import io.vertx.core.Vertx;
+import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
 import io.vertx.core.datagram.DatagramSocketOptions;
 import lombok.Getter;
@@ -18,6 +20,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import thirdpart.bean.CmdPack;
 import thirdpart.checksum.CheckSum;
 import thirdpart.codec.BodyCodec;
 import thirdpart.codec.MsgCodec;
@@ -111,6 +114,22 @@ public class EngineConfig {
                 "0.0.0.0",
                 asyncRes -> {
                     if (asyncRes.succeeded()) {
+
+                        socket.handler(packet -> {
+                            Buffer udpData = packet.data();
+                            if (udpData.length() > 0) {
+                                try {
+                                    CmdPack cmdPack = bodyCodec.deserialize(udpData.getBytes(), CmdPack.class);
+                                    CmdPacketQueue.getInstance().cache(cmdPack);
+                                } catch (CodecException e) {
+                                    log.error("Decode packet error", e);
+                                }
+                            } else {
+                                log.error("Receive empty udp packet from client {}", packet.sender().toString());
+                            }
+                        });
+
+
                         try {
                             socket.listenMulticastGroup(
                                     orderRecvIp,
@@ -120,6 +139,8 @@ public class EngineConfig {
                         } catch (Exception e) {
                             log.error(e);
                         }
+                    } else {
+                        log.error("Listen failed,", asyncRes.cause());
                     }
                 });
     }
