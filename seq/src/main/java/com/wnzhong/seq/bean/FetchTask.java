@@ -19,7 +19,6 @@ import thirdpart.order.OrderDirection;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 从 map 中拿到所有网关的链接，遍历链接，并从网关中逐一捞取数据，获取所有数据后再定序
@@ -102,7 +101,7 @@ public class FetchTask extends TimerTask {
             insertToKVStore(packetNo, serialize);
 
             // 3.更新PacketNo+1
-            updatePacketNoInStore(packetNo);
+            updatePacketNoInStore(packetNo + 1);
 
             // 4.发送
             seqConfig.getMulticastSender().send(
