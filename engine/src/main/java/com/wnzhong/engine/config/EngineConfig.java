@@ -9,8 +9,10 @@ import com.alipay.sofa.jraft.rhea.options.RheaKVStoreOptions;
 import com.alipay.sofa.jraft.rhea.options.configured.MultiRegionRouteTableOptionsConfigured;
 import com.alipay.sofa.jraft.rhea.options.configured.PlacementDriverOptionsConfigured;
 import com.alipay.sofa.jraft.rhea.options.configured.RheaKVStoreOptionsConfigured;
+import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.wnzhong.engine.bean.CmdPacketQueue;
 import com.wnzhong.engine.core.EngineApi;
+import com.wnzhong.engine.db.DbQuery;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
@@ -20,6 +22,7 @@ import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
+import org.apache.commons.dbutils.QueryRunner;
 import thirdpart.bean.CmdPack;
 import thirdpart.checksum.CheckSum;
 import thirdpart.codec.BodyCodec;
@@ -30,7 +33,6 @@ import java.net.Inet4Address;
 import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.*;
-import java.util.zip.ZipFile;
 
 /**
  * @author wayne
@@ -92,10 +94,11 @@ public class EngineConfig {
                 .newConfigured()
                 .withInitialServerList(-1L, seqUrlList)
                 .config();
-        final PlacementDriverOptions placementDriverOptions = PlacementDriverOptionsConfigured
-                .newConfigured()
-                .withFake(true)
-                .withRegionRouteTableOptionsList(regionRouteTableOptions)
+        PlacementDriverOptionsConfigured placementDriverOptionsConfigured = PlacementDriverOptionsConfigured
+                .newConfigured();
+        placementDriverOptionsConfigured.withFake(true);
+        placementDriverOptionsConfigured.withRegionRouteTableOptionsList(regionRouteTableOptions);
+        final PlacementDriverOptions placementDriverOptions = placementDriverOptionsConfigured
                 .config();
         final RheaKVStoreOptions rheaKVStoreOptions = RheaKVStoreOptionsConfigured
                 .newConfigured()
@@ -187,8 +190,12 @@ public class EngineConfig {
 
     ////////////////////////////////////////////数据库连接///////////////////////////////////////////////////
 
-    private void initDB() {
+    @Getter
+    private DbQuery dbQuery;
 
+    private void initDB() {
+        QueryRunner queryRunner = new QueryRunner(new ComboPooledDataSource());
+        dbQuery = new DbQuery(queryRunner);
     }
 
     /////////////////////////////////////////////读取配置///////////////////////////////////////////////////

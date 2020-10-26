@@ -113,6 +113,18 @@
       <version>26.0-jre</version>
     </dependency>
 
+    <!-- Eclipse (Goldman Sachs) collections -->
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections-api</artifactId>
+      <version>9.2.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.collections</groupId>
+      <artifactId>eclipse-collections</artifactId>
+      <version>9.2.0</version>
+    </dependency>
+
   </dependencies>
 
 

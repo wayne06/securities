@@ -45,8 +45,13 @@ public class MsgConstants {
 
 
     //////////////////////交易所状态///////////////////////
+
     public static final int ON = 1;
 
     public static final int OFF = 0;
+
+
+    //数据库和内存中价格转换因子
+    public static final int MULTI_FACTOR = 10000;
 
 }
