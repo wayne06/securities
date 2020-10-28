@@ -14,6 +14,9 @@ import java.util.Map;
 
 import static thirdpart.bean.MsgConstants.MULTI_FACTOR;
 
+/**
+ * @author wayne
+ */
 @Log4j2
 @AllArgsConstructor
 public class DbQuery {

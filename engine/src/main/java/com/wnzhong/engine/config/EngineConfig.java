@@ -9,10 +9,20 @@ import com.alipay.sofa.jraft.rhea.options.RheaKVStoreOptions;
 import com.alipay.sofa.jraft.rhea.options.configured.MultiRegionRouteTableOptionsConfigured;
 import com.alipay.sofa.jraft.rhea.options.configured.PlacementDriverOptionsConfigured;
 import com.alipay.sofa.jraft.rhea.options.configured.RheaKVStoreOptionsConfigured;
+import com.google.common.collect.Lists;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.wnzhong.engine.bean.CmdPacketQueue;
+import com.wnzhong.engine.bean.orderbook.GOrderBookImpl;
+import com.wnzhong.engine.bean.orderbook.IOrderBook;
 import com.wnzhong.engine.core.EngineApi;
+import com.wnzhong.engine.core.EngineCore;
 import com.wnzhong.engine.db.DbQuery;
+import com.wnzhong.engine.handler.BaseHandler;
+import com.wnzhong.engine.handler.match.StockMatchHandler;
+import com.wnzhong.engine.handler.pub.L1PubHandler;
+import com.wnzhong.engine.handler.risk.ExistRiskHandler;
+import io.netty.util.collection.IntObjectHashMap;
+import io.netty.util.collection.ShortObjectHashMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
@@ -24,9 +34,12 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.dbutils.QueryRunner;
 import thirdpart.bean.CmdPack;
+import thirdpart.bus.IBusSender;
+import thirdpart.bus.MqttBusSender;
 import thirdpart.checksum.CheckSum;
 import thirdpart.codec.BodyCodec;
 import thirdpart.codec.MsgCodec;
+import thirdpart.hq.MatchData;
 
 import java.io.IOException;
 import java.net.Inet4Address;
@@ -61,7 +74,7 @@ public class EngineConfig {
 
     private Vertx vertx = Vertx.vertx();
 
-    public void startup() throws IOException {
+    public void startup() throws Exception {
         //1.读取配置文件
         initConfig();
 
@@ -86,7 +99,7 @@ public class EngineConfig {
     private final RheaKVStore orderKVStore = new DefaultRheaKVStore();
 
     @Getter
-    private EngineApi engineApi = new EngineApi();
+    private EngineApi engineApi;
 
     private void startSeqConn() {
         //1.完成到KVStore的连接
@@ -178,14 +191,34 @@ public class EngineConfig {
 
     ///////////////////////////////////////////建立总线连接//////////////////////////////////////////////////
 
-    private void initPub() {
+    @Getter
+    private IBusSender busSender;
 
+    private void initPub() {
+        busSender = new MqttBusSender(pubIp, pubPort, msgCodec, vertx);
+        busSender.startup();
     }
 
     ///////////////////////////////////////////启动撮合核心//////////////////////////////////////////////////
 
-    private void startEngine() {
+    private void startEngine() throws Exception {
+        //1.前置风控处理器
+        final BaseHandler riskHandler =
+                new ExistRiskHandler(dbQuery.queryAllBalance().keySet(), dbQuery.queryAllStockCode());
 
+        //2.撮合处理器（订单簿*****）撮合/提供行情查询
+        IntObjectHashMap<IOrderBook> orderBookMap = new IntObjectHashMap<>();
+        dbQuery.queryAllStockCode().forEach(code -> orderBookMap.put(code, new GOrderBookImpl(code)));
+        final BaseHandler matchHandler = new StockMatchHandler(orderBookMap);
+
+        //3.发布处理器
+        ShortObjectHashMap<List<MatchData>> matcherEventMap = new ShortObjectHashMap<>();
+        for (short id : dbQuery.queryAllMemberIds()) {
+            matcherEventMap.put(id, Lists.newArrayList());
+        }
+        final BaseHandler pubHandler = new L1PubHandler(matcherEventMap, this);
+
+        engineApi = new EngineCore(riskHandler, matchHandler, pubHandler).getApi();
     }
 
     ////////////////////////////////////////////数据库连接///////////////////////////////////////////////////
