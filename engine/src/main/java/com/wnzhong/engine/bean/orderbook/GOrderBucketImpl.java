@@ -1,6 +1,5 @@
 package com.wnzhong.engine.bean.orderbook;
 
-import com.sun.org.apache.xpath.internal.operations.Or;
 import com.wnzhong.engine.bean.command.RbCmd;
 import lombok.Getter;
 import lombok.Setter;
@@ -8,7 +7,6 @@ import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import thirdpart.order.OrderDirection;
 import thirdpart.order.OrderStatus;
 
 import java.util.Iterator;

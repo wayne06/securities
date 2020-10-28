@@ -8,6 +8,9 @@ import lombok.Getter;
 @Getter
 public enum CmdResultCode {
 
+    /**
+     *
+     */
     SUCCESS(1),
 
     /////////////////////////order book/////////////////////////////
