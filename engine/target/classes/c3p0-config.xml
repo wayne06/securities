@@ -2,7 +2,7 @@
 <c3p0-config>
   <default-config>
     <property name="driverClass">org.sqlite.JDBC</property>
-    <property name="jdbcUrl">jdbc:sqlite:d:/counter.db</property>
+    <property name="jdbcUrl">jdbc:sqlite:E:\skill up\DOING\trader\code\counter.db</property>
     <!--<property name="user">root</property>-->
     <!--<property name="password">root</property>-->
 

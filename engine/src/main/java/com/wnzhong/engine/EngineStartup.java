@@ -5,11 +5,9 @@ import thirdpart.checksum.ByteCheckSum;
 import thirdpart.codec.BodyCodecImpl;
 import thirdpart.codec.MsgCodecImpl;
 
-import java.io.IOException;
-
 public class EngineStartup {
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws Exception {
         new EngineConfig("engine.properties",
                 new BodyCodecImpl(),
                 new ByteCheckSum(),

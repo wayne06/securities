@@ -21,8 +21,6 @@ import com.wnzhong.engine.handler.BaseHandler;
 import com.wnzhong.engine.handler.match.StockMatchHandler;
 import com.wnzhong.engine.handler.pub.L1PubHandler;
 import com.wnzhong.engine.handler.risk.ExistRiskHandler;
-import io.netty.util.collection.IntObjectHashMap;
-import io.netty.util.collection.ShortObjectHashMap;
 import io.vertx.core.Vertx;
 import io.vertx.core.buffer.Buffer;
 import io.vertx.core.datagram.DatagramSocket;
@@ -33,6 +31,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.ToString;
 import lombok.extern.log4j.Log4j2;
 import org.apache.commons.dbutils.QueryRunner;
+import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ShortObjectHashMap;
 import thirdpart.bean.CmdPack;
 import thirdpart.bus.IBusSender;
 import thirdpart.bus.MqttBusSender;
@@ -107,11 +107,10 @@ public class EngineConfig {
                 .newConfigured()
                 .withInitialServerList(-1L, seqUrlList)
                 .config();
-        PlacementDriverOptionsConfigured placementDriverOptionsConfigured = PlacementDriverOptionsConfigured
-                .newConfigured();
-        placementDriverOptionsConfigured.withFake(true);
-        placementDriverOptionsConfigured.withRegionRouteTableOptionsList(regionRouteTableOptions);
-        final PlacementDriverOptions placementDriverOptions = placementDriverOptionsConfigured
+        final PlacementDriverOptions placementDriverOptions = PlacementDriverOptionsConfigured
+                .newConfigured()
+                .withFake(true)
+                .withRegionRouteTableOptionsList(regionRouteTableOptions)
                 .config();
         final RheaKVStoreOptions rheaKVStoreOptions = RheaKVStoreOptionsConfigured
                 .newConfigured()
@@ -163,6 +162,7 @@ public class EngineConfig {
 
     /**
      * 获取合适的网卡（适合接收UDP数据的网卡需要满足：1.非loopback网卡 2.支持multicast 3.非虚拟机网卡 4.有IPV4）
+     *
      * @return
      */
     private static NetworkInterface mainInterface() throws SocketException {

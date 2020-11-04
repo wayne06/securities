@@ -9,6 +9,13 @@ import lombok.extern.log4j.Log4j2;
 import thirdpart.bean.CommonMsg;
 import thirdpart.codec.MsgCodec;
 
+import java.util.concurrent.TimeUnit;
+
+/**
+ * MQTT (Message Queuing Telemetry Transport)：消息队列遥测传输协议
+ *
+ * @author wayne
+ */
 @Log4j2
 @RequiredArgsConstructor
 public class MqttBusSender implements IBusSender {
@@ -29,6 +36,7 @@ public class MqttBusSender implements IBusSender {
 
     @Override
     public void startup() {
+        //连接总线
         mqttConnect();
     }
 
@@ -42,6 +50,15 @@ public class MqttBusSender implements IBusSender {
                 log.info("Connect to mqtt bus [ip: {}, port: {}] failed.", ip, port);
                 mqttConnect();
             }
+        });
+
+        mqttClient.closeHandler(h -> {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException e) {
+                log.error(e);
+            }
+            mqttConnect();
         });
     }
 

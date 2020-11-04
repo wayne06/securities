@@ -23,11 +23,17 @@ cacheexpire:
 
 # 机器位置：
 counter:
-    # 会员号
+    # 会员号（柜台ID）
     id: 1000
 
     # 网关id
     gatewayId: 1001
+
+    # TCP直连网关信息
+    sendIp: 127.0.0.1
+    sendPort: 8091
+
+
 
     # 机房id，机柜id
     dataCenterId: 0
@@ -38,8 +44,6 @@ counter:
     bodycodec: thirdpart.codec.BodyCodecImpl
     msgcodec: thirdpart.codec.MsgCodecImpl
 
-    # TCP直连网关信息
-    sendIp: 127.0.0.1
-    sendPort: 8091
+
 
 
