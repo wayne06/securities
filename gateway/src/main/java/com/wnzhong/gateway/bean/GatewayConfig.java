@@ -16,6 +16,8 @@ import thirdpart.checksum.CheckSum;
 import thirdpart.codec.BodyCodec;
 import thirdpart.fetchserv.FetchService;
 
+import java.io.InputStream;
+
 @Getter
 @Log4j2
 public class GatewayConfig {
@@ -45,9 +47,9 @@ public class GatewayConfig {
 
     private Vertx vertx = Vertx.vertx();
 
-    public void initConfig(String fileName) throws DocumentException {
+    public void initConfig(InputStream in) throws DocumentException {
         SAXReader saxReader = new SAXReader();
-        Document document = saxReader.read(fileName);
+        Document document = saxReader.read(in);
         Element rootElement = document.getRootElement();
         id = Short.parseShort(rootElement.element("id").getText());
         recvPort = Integer.parseInt(rootElement.element("recvport").getText());
