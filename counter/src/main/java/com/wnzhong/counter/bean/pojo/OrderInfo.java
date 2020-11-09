@@ -1,4 +1,4 @@
-package com.wnzhong.counter.bean;
+package com.wnzhong.counter.bean.pojo;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,16 +9,17 @@ import lombok.ToString;
 @Setter
 @NoArgsConstructor
 @ToString
-public class TradeInfo {
+public class OrderInfo {
 
     private int id;
     private long uid;
     private int code;
     private String name;
     private int direction;
+    private int type;
     private long price;
-    private long tcount;
-    private int oid;
+    private long ocount;
+    private int status;
     private String date;
     private String time;
 

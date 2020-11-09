@@ -1,4 +1,4 @@
-package com.wnzhong.counter.bean;
+package com.wnzhong.counter.bean.pojo;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
