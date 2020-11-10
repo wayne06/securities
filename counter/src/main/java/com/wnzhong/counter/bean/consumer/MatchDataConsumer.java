@@ -144,10 +144,11 @@ public class MatchDataConsumer {
         }
 
         //通知委托终端
-        counterConfig.getVertx().eventBus().publish(ORDER_NOTIFY_ADDR_PREFIX + orderCmd.uid, "");
+        counterConfig.getVertx().eventBus().publish(
+                ORDER_NOTIFY_ADDR_PREFIX + orderCmd.uid,
+                "");
 
     }
-
 
 
 }

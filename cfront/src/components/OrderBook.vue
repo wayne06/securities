@@ -120,6 +120,46 @@
                 }
             },
         },
+        created() {
+            this.$bus.on("codeinput-selected", this.startL1Sub);
+        },
+        beforeDestroy() {
+            this.$bus.off("codeinput-selected", this.startL1Sub);
+        },
+        methods: {
+            startL1Sub(item) {
+                let code = item.code;
+                let _vm = this;
+                this.resetData(true);
+
+                _vm.intervalId = setInterval(() => {
+                    vm.$eventBus.send('l1-market-data',
+                        {},
+                        {}
+                    );
+                }, 1000);
+            },
+            //重置订单簿
+            resetData(isClearInterval) {
+                this.hqtime = '--:--:--';
+                this.hqtimestamp = 0;
+                //清空原来的数据
+                this.buy.forEach(t => {
+                    t.price = -1;
+                    t.volume = -1;
+                    t.width = 1;
+                });
+                this.sell.forEach(t => {
+                    t.price = -1;
+                    t.volume = -1;
+                    t.width = 1;
+                });
+                if (this.intervalId != -1 && isClearInterval) {
+                    clearInterval(this.intervalId);
+                    this.intervalId = -1;
+                }
+            }
+        }
     }
 </script>
 

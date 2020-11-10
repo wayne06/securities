@@ -60,6 +60,7 @@ public class MarketDataConsumer {
                 }
             }
         });
+
         eventBus.consumer(L1_MARKET_DATA_PREFIX).handler(h -> {
             int code = Integer.parseInt(h.headers().get("code"));
             L1MarketData l1MarketData = l1Cache.get(code);

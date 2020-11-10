@@ -96,7 +96,7 @@
                 if (this.direction === constants.SELL) {
                     let posiArr = this.$store.state.posiData;
                     console.log(posiArr)
-                    for (let i = 0, length = posiArr.length; i < length; i++) {
+                    for (let i = 0, len = posiArr.length; i < len; i++) {
                         if (posiArr[i].code == this.code) {
                             this.affordCount = posiArr[i].count;
                             console.log(this.affordCount);
