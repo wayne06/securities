@@ -1,5 +1,6 @@
 package com.wnzhong.counter.config;
 
+import com.wnzhong.counter.bean.consumer.MqttBusConsumer;
 import io.vertx.core.Vertx;
 import lombok.Getter;
 import lombok.extern.log4j.Log4j2;
@@ -42,6 +43,19 @@ public class CounterConfig {
 
     private Vertx vertx = Vertx.vertx();
 
+    //////////////////////////////websocket配置///////////////////////////////////
+
+    @Value("${counter.pubport}")
+    private int pubPort;
+
+    //////////////////////////////总线配置///////////////////////////////////
+
+    @Value("${counter.subbusip}")
+    private String subBusIp;
+
+    @Value("${counter.subbusport}")
+    private int subBusPort;
+
     //////////////////////////////编码相关配置///////////////////////////////////
 
     @Value("${counter.checksum}")
@@ -72,6 +86,9 @@ public class CounterConfig {
         } catch (Exception e) {
             log.error("Counter config init error: ", e);
         }
+
+        //初始化总线连接
+        new MqttBusConsumer(subBusIp, subBusPort, String.valueOf(id), msgCodec, checksum, vertx).startup();
     }
 
 

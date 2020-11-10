@@ -1,11 +1,14 @@
 package com.wnzhong.counter.service;
 
-import com.wnzhong.counter.bean.OrderInfo;
-import com.wnzhong.counter.bean.PosiInfo;
-import com.wnzhong.counter.bean.TradeInfo;
+import com.alipay.remoting.exception.CodecException;
+import com.wnzhong.counter.bean.pojo.OrderInfo;
+import com.wnzhong.counter.bean.pojo.PosiInfo;
+import com.wnzhong.counter.bean.pojo.TradeInfo;
+import com.wnzhong.counter.config.CounterConfig;
 import com.wnzhong.counter.config.GatewayConnection;
 import com.wnzhong.counter.util.DbUtil;
 import com.wnzhong.counter.util.IDConverter;
+import io.vertx.core.buffer.Buffer;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,6 +20,8 @@ import java.util.List;
 @Service
 @Log4j2
 public class OrderServiceImpl implements OrderService {
+
+    public static final String ORDER_DATA_CACHE_ADDR = "order_data_cache_addr";
 
     @Autowired
     private GatewayConnection gatewayConnection;
@@ -42,7 +47,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean sendOrder(OrderCmd orderCmd) {
+    public boolean sendOrder(OrderCmd orderCmd, CounterConfig counterConfig) {
         // 1.入库
         int oid = DbUtil.saveOrder(orderCmd);
 
@@ -65,6 +70,18 @@ public class OrderServiceImpl implements OrderService {
             // 长整型高位用柜台ID，低位部分用这笔委托在数据库中的主键
             orderCmd.oid = IDConverter.combineInt2Long(orderCmd.mid, oid);
 
+            // 保存委托到缓存（+）
+            byte[] serialize = null;
+            try {
+                serialize = counterConfig.getBodyCodec().serialize(orderCmd);
+            } catch (CodecException e) {
+                log.error(e);
+            }
+            if (serialize == null) {
+                return false;
+            }
+            counterConfig.getVertx().eventBus().send(ORDER_DATA_CACHE_ADDR, Buffer.buffer(serialize));
+
             // c.打包委托：orderCmd -> 网关模版数据commonMsg -> TCP数据流
             // d.发送数据
             gatewayConnection.sendOrder(orderCmd);
@@ -73,5 +90,12 @@ public class OrderServiceImpl implements OrderService {
             return true;
         }
 
+    }
+
+    @Override
+    public boolean cancelOrder(OrderCmd orderCmd) {
+        log.info("Recv cancel order: {}", orderCmd);
+        gatewayConnection.sendOrder(orderCmd);
+        return true;
     }
 }

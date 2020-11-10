@@ -20,7 +20,7 @@
       uid = #{UId, jdbcType=BIGINT}
   </select>
 
-  <select id="queryPosi" resultType="com.wnzhong.counter.bean.PosiInfo">
+  <select id="queryPosi" resultType="com.wnzhong.counter.bean.pojo.PosiInfo">
     select
       p.id,
       p.uid,
@@ -68,7 +68,7 @@
       code = #{StockCode, jdbcType=INTEGER}
   </update>
 
-  <select id="queryOrder" resultType="com.wnzhong.counter.bean.OrderInfo">
+  <select id="queryOrder" resultType="com.wnzhong.counter.bean.pojo.OrderInfo">
     select
       o.id,
       o.uid,
@@ -90,7 +90,7 @@
       o.code = s.code
   </select>
 
-  <select id="queryTrade" resultType="com.wnzhong.counter.bean.TradeInfo">
+  <select id="queryTrade" resultType="com.wnzhong.counter.bean.pojo.TradeInfo">
     select
       t.id,
       t.uid,
@@ -110,6 +110,41 @@
       and
       t.code = s.code
   </select>
+
+  <update id="updateOrder" parameterType="Map">
+    update
+      t_order
+    set
+      status = #{Status}
+    where
+      id = #{Id}
+  </update>
+
+  <insert id="saveTrade" parameterType="Map">
+    insert into
+      t_trade(
+        id,
+        uid,
+        code,
+        direction,
+        price,
+        tcount,
+        oid,
+        date,
+        time
+      )
+      values (
+        #{Id},
+        #{UId},
+        #{Code},
+        #{Direction},
+        #{Price},
+        #{TCount},
+        #{OId},
+        #{Date},
+        #{Time}
+      )
+  </insert>
 
   <insert id="saveOrder" parameterType="map">
     insert into

@@ -1,8 +1,9 @@
 package com.wnzhong.counter.service;
 
-import com.wnzhong.counter.bean.OrderInfo;
-import com.wnzhong.counter.bean.PosiInfo;
-import com.wnzhong.counter.bean.TradeInfo;
+import com.wnzhong.counter.bean.pojo.OrderInfo;
+import com.wnzhong.counter.bean.pojo.PosiInfo;
+import com.wnzhong.counter.bean.pojo.TradeInfo;
+import com.wnzhong.counter.config.CounterConfig;
 import thirdpart.order.OrderCmd;
 
 import java.util.List;
@@ -17,6 +18,7 @@ public interface OrderService {
 
     List<TradeInfo> getTrade(long uid);
 
-    boolean sendOrder(OrderCmd orderCmd);
+    boolean sendOrder(OrderCmd orderCmd, CounterConfig counterConfig);
 
+    boolean cancelOrder(OrderCmd orderCmd);
 }

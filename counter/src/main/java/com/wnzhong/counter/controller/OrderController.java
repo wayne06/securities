@@ -4,6 +4,7 @@ import com.wnzhong.counter.bean.res.CounterRes;
 import com.wnzhong.counter.cache.StockCache;
 import com.wnzhong.counter.config.CounterConfig;
 import com.wnzhong.counter.service.OrderService;
+import com.wnzhong.counter.util.IDConverter;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,10 +69,25 @@ public class OrderController {
                                     .volume(volume)
                                     .orderType(OrderType.of(ordertype))
                                     .build();
-        if (orderService.sendOrder(orderCmd)) {
+        if (orderService.sendOrder(orderCmd, counterConfig)) {
             return new CounterRes(CounterRes.SUCCESS, "SAVE ORDER SUCCESS", null);
         } else {
             return new CounterRes(CounterRes.FAIL, "SAVE ORDER FAILED", null);
+        }
+    }
+
+    @RequestMapping("/cancelorder")
+    public CounterRes cancelOrder(@RequestParam int uid, @RequestParam int counterOId, @RequestParam int code) {
+        OrderCmd orderCmd = OrderCmd.builder()
+                                    .uid(uid)
+                                    .code(code)
+                                    .type(CmdType.CANCEL_ORDER)
+                                    .oid(IDConverter.combineInt2Long(counterConfig.getId(), counterOId))
+                                    .build();
+        if (orderService.cancelOrder(orderCmd)) {
+            return new CounterRes(CounterRes.SUCCESS, "CANCEL ORDER SUCCESS", null);
+        } else {
+            return new CounterRes(CounterRes.FAIL, "CANCEL ORDER FAILED", null);
         }
     }
 

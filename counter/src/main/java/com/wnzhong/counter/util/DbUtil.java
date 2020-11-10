@@ -4,10 +4,10 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
-import com.wnzhong.counter.bean.Account;
-import com.wnzhong.counter.bean.OrderInfo;
-import com.wnzhong.counter.bean.PosiInfo;
-import com.wnzhong.counter.bean.TradeInfo;
+import com.wnzhong.counter.bean.pojo.Account;
+import com.wnzhong.counter.bean.pojo.OrderInfo;
+import com.wnzhong.counter.bean.pojo.PosiInfo;
+import com.wnzhong.counter.bean.pojo.TradeInfo;
 import com.wnzhong.counter.cache.CacheType;
 import com.wnzhong.counter.cache.RedisStringCache;
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +15,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
+import thirdpart.hq.MatchData;
 import thirdpart.order.OrderCmd;
 import thirdpart.order.OrderStatus;
 
@@ -182,6 +183,15 @@ public class DbUtil {
         }
     }
 
+    public static void updateOrder(long uid, int oid, OrderStatus status) {
+        Map<String, Object> param = Maps.newHashMap();
+        param.put("Id", oid);
+        param.put("Status", status.getCode());
+        dbUtil.getSqlSessionTemplate().update("orderMapper.updateOrder", param);
+
+        RedisStringCache.remove(Long.toString(uid), CacheType.ORDER);
+    }
+
     //********************************** 成交 **********************************
 
     public static List<TradeInfo> getTradeList(long uid) {
@@ -198,7 +208,26 @@ public class DbUtil {
         } else {
             return JsonUtil.fromJsonArr(tradeInCache, TradeInfo.class);
         }
+    }
 
+    public static void saveTrade(int counterOId, MatchData matchData, OrderCmd orderCmd) {
+        if (orderCmd == null) {
+            return;
+        }
+        Map<String, Object> param = Maps.newHashMap();
+        param.put("Id", matchData.tid);
+        param.put("UId", orderCmd.uid);
+        param.put("Code", orderCmd.code);
+        param.put("Direction", orderCmd.direction.getDirection());
+        param.put("Price", matchData.price);
+        param.put("TCount", matchData.volume);
+        param.put("OId", counterOId);
+        param.put("Date", TimeUtil.yyyyMMdd(matchData.timestamp));
+        param.put("Time", TimeUtil.hhMMss(matchData.timestamp));
+        dbUtil.getSqlSessionTemplate().insert("orderMapper.saveTrade", param);
+
+        //更新缓存
+        RedisStringCache.remove(Long.toString(orderCmd.uid), CacheType.TRADE);
     }
 
     //********************************** 股票信息查询 **********************************

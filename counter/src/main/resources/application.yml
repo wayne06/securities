@@ -29,15 +29,20 @@ counter:
     # 网关id
     gatewayId: 1001
 
+    # 机房id，机柜id
+    dataCenterId: 0
+    workerId: 0
+
     # TCP直连网关信息
     sendIp: 127.0.0.1
     sendPort: 8091
 
+    # 订阅总线数据
+    subbusip: 127.0.0.1
+    subbusport: 1883
 
-
-    # 机房id，机柜id
-    dataCenterId: 0
-    workerId: 0
+    # 委托终端通信
+    pubport: 8501
 
     # 编码解码器
     checksum: thirdpart.checksum.ByteCheckSum

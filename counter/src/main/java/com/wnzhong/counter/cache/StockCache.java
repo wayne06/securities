@@ -2,7 +2,7 @@ package com.wnzhong.counter.cache;
 
 import com.google.common.collect.HashMultimap;
 import com.google.common.collect.Lists;
-import com.wnzhong.counter.bean.StockInfo;
+import com.wnzhong.counter.bean.pojo.StockInfo;
 import com.wnzhong.counter.util.DbUtil;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Component;

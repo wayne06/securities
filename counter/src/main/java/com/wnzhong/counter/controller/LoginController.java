@@ -1,6 +1,6 @@
 package com.wnzhong.counter.controller;
 
-import com.wnzhong.counter.bean.Account;
+import com.wnzhong.counter.bean.pojo.Account;
 import com.wnzhong.counter.bean.res.CaptchaRes;
 import com.wnzhong.counter.bean.res.CounterRes;
 import com.wnzhong.counter.cache.CacheType;

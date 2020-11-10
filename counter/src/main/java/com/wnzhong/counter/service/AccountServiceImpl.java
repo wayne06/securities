@@ -1,6 +1,6 @@
 package com.wnzhong.counter.service;
 
-import com.wnzhong.counter.bean.Account;
+import com.wnzhong.counter.bean.pojo.Account;
 import com.wnzhong.counter.cache.CacheType;
 import com.wnzhong.counter.cache.RedisStringCache;
 import com.wnzhong.counter.util.DbUtil;
