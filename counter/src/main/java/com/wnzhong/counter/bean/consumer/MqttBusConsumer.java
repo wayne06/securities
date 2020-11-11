@@ -64,7 +64,7 @@ public class MqttBusConsumer {
                 topic.put(HQ_ADDR, MqttQoS.AT_LEAST_ONCE.value());
                 mqttClient.subscribe(topic).publishHandler(h -> {
                     CommonMsg msg = msgCodec.decodeFromBuffer(h.payload());
-                    if (msg.getChecksum() != checkSum.getSum(msg.getBody())) {
+                    if (msg.getChecksum() != (checkSum.getSum(msg.getBody()))) {
                         return;
                     }
                     byte[] body = msg.getBody();

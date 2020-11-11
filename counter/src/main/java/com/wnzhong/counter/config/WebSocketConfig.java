@@ -33,7 +33,7 @@ public class WebSocketConfig {
         //只允许成交 委托的变动通过websocket总线往外发送
         BridgeOptions options = new BridgeOptions()
                 .addInboundPermitted(new PermittedOptions().setAddress(L1_MARKET_DATA_PREFIX))
-                .addOutboundPermitted(new PermittedOptions().setAddressRegex(ORDER_NOTIFY_ADDR_PREFIX + "[0-9]+"  ))
+                .addOutboundPermitted(new PermittedOptions().setAddressRegex(ORDER_NOTIFY_ADDR_PREFIX + "[0-9]+"))
                 .addOutboundPermitted(new PermittedOptions().setAddressRegex(TRADE_NOTIFY_ADDR_PREFIX + "[0-9]+"));
 
         SockJSHandler sockJSHandler = SockJSHandler.create(vertx);

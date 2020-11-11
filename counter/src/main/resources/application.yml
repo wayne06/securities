@@ -38,7 +38,7 @@ counter:
     sendPort: 8091
 
     # 订阅总线数据
-    subbusip: 127.0.0.1
+    subbusip: 192.168.140.151
     subbusport: 1883
 
     # 委托终端通信

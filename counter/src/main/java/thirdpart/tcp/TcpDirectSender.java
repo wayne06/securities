@@ -86,7 +86,7 @@ public class TcpDirectSender {
                 });
 
             } else {
-                log.error("Connect to {} : {} failed.", ip, port);
+                log.error("Connect to {}:{} failed.", ip, port);
                 reconnect();
             }
         }

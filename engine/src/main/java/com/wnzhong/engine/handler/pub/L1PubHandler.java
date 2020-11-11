@@ -58,7 +58,7 @@ public class L1PubHandler extends BaseHandler {
         if (matcherEventMap.size() == 0) {
             return;
         }
-        log.info(matcherEventMap);
+        //log.info(matcherEventMap);
         try {
             for (ShortObjectPair<List<MatchData>> s : matcherEventMap.keyValuesView()) {
                 if (CollectionUtils.isEmpty(s.getTwo())) {
@@ -78,7 +78,7 @@ public class L1PubHandler extends BaseHandler {
     public static final short HQ_ADDRESS = -1;
 
     private void pubMarketData(IntObjectHashMap<L1MarketData> marketDataMap) {
-        log.info(marketDataMap);
+        //log.info(marketDataMap);
         byte[] serialize = null;
         try {
             serialize = engineConfig.getBodyCodec()
