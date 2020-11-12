@@ -35,10 +35,10 @@ public class EngineCore {
     @Getter
     private final EngineApi api;
 
-    public EngineCore(@NonNull BaseHandler riskHandler,
-                      @NonNull BaseHandler matchHandler,
-                      @NonNull BaseHandler pubHandler) {
-        this.disruptor = new Disruptor<RbCmd>(
+    public EngineCore(@NonNull final BaseHandler riskHandler,
+                      @NonNull final BaseHandler matchHandler,
+                      @NonNull final BaseHandler pubHandler) {
+        this.disruptor = new Disruptor<>(
                 new RbCmdFactory(),
                 RING_BUFFER_SIZE,
                 new AffinityThreadFactory("aft_engine_core", AffinityStrategies.ANY),

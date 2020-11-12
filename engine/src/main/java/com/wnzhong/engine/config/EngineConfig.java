@@ -92,6 +92,48 @@ public class EngineConfig {
         startSeqConn();
     }
 
+    ///////////////////////////////////////////建立总线连接//////////////////////////////////////////////////
+
+    @Getter
+    private IBusSender busSender;
+
+    private void initPub() {
+        busSender = new MqttBusSender(pubIp, pubPort, msgCodec, vertx);
+        busSender.startup();
+    }
+
+    ///////////////////////////////////////////启动撮合核心//////////////////////////////////////////////////
+
+    private void startEngine() throws Exception {
+        //1.前置风控处理器
+        final BaseHandler riskHandler =
+                new ExistRiskHandler(dbQuery.queryAllBalance().keySet(), dbQuery.queryAllStockCode());
+
+        //2.撮合处理器（订单簿*****）撮合/提供行情查询
+        IntObjectHashMap<IOrderBook> orderBookMap = new IntObjectHashMap<>();
+        dbQuery.queryAllStockCode().forEach(code -> orderBookMap.put(code, new GOrderBookImpl(code)));
+        final BaseHandler matchHandler = new StockMatchHandler(orderBookMap);
+
+        //3.发布处理器
+        ShortObjectHashMap<List<MatchData>> matcherEventMap = new ShortObjectHashMap<>();
+        for (short id : dbQuery.queryAllMemberIds()) {
+            matcherEventMap.put(id, Lists.newArrayList());
+        }
+        final BaseHandler pubHandler = new L1PubHandler(matcherEventMap, this);
+
+        engineApi = new EngineCore(riskHandler, matchHandler, pubHandler).getApi();
+    }
+
+    ////////////////////////////////////////////数据库连接///////////////////////////////////////////////////
+
+    @Getter
+    private DbQuery dbQuery;
+
+    private void initDB() {
+        QueryRunner queryRunner = new QueryRunner(new ComboPooledDataSource());
+        dbQuery = new DbQuery(queryRunner);
+    }
+
     ////////////////////////////////////////////连接排队机///////////////////////////////////////////////////
 
     @Getter
@@ -187,48 +229,6 @@ public class EngineConfig {
                         .findFirst()
                         .orElse(null);
         return networkInterface;
-    }
-
-    ///////////////////////////////////////////建立总线连接//////////////////////////////////////////////////
-
-    @Getter
-    private IBusSender busSender;
-
-    private void initPub() {
-        busSender = new MqttBusSender(pubIp, pubPort, msgCodec, vertx);
-        busSender.startup();
-    }
-
-    ///////////////////////////////////////////启动撮合核心//////////////////////////////////////////////////
-
-    private void startEngine() throws Exception {
-        //1.前置风控处理器
-        final BaseHandler riskHandler =
-                new ExistRiskHandler(dbQuery.queryAllBalance().keySet(), dbQuery.queryAllStockCode());
-
-        //2.撮合处理器（订单簿*****）撮合/提供行情查询
-        IntObjectHashMap<IOrderBook> orderBookMap = new IntObjectHashMap<>();
-        dbQuery.queryAllStockCode().forEach(code -> orderBookMap.put(code, new GOrderBookImpl(code)));
-        final BaseHandler matchHandler = new StockMatchHandler(orderBookMap);
-
-        //3.发布处理器
-        ShortObjectHashMap<List<MatchData>> matcherEventMap = new ShortObjectHashMap<>();
-        for (short id : dbQuery.queryAllMemberIds()) {
-            matcherEventMap.put(id, Lists.newArrayList());
-        }
-        final BaseHandler pubHandler = new L1PubHandler(matcherEventMap, this);
-
-        engineApi = new EngineCore(riskHandler, matchHandler, pubHandler).getApi();
-    }
-
-    ////////////////////////////////////////////数据库连接///////////////////////////////////////////////////
-
-    @Getter
-    private DbQuery dbQuery;
-
-    private void initDB() {
-        QueryRunner queryRunner = new QueryRunner(new ComboPooledDataSource());
-        dbQuery = new DbQuery(queryRunner);
     }
 
     /////////////////////////////////////////////读取配置///////////////////////////////////////////////////

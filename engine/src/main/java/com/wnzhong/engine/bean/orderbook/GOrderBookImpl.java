@@ -3,10 +3,10 @@ package com.wnzhong.engine.bean.orderbook;
 import com.google.common.collect.Lists;
 import com.wnzhong.engine.bean.command.CmdResultCode;
 import com.wnzhong.engine.bean.command.RbCmd;
-import io.netty.util.collection.LongObjectHashMap;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
+import org.eclipse.collections.impl.map.mutable.primitive.LongObjectHashMap;
 import thirdpart.hq.L1MarketData;
 import thirdpart.order.OrderDirection;
 import thirdpart.order.OrderStatus;
@@ -86,17 +86,6 @@ public class GOrderBookImpl implements IOrderBook {
         return CmdResultCode.SUCCESS;
     }
 
-    private void genMatchEvent(RbCmd cmd, OrderStatus status) {
-        long now = System.currentTimeMillis();
-        MatchEvent event = new MatchEvent();
-        event.timestamp = now;
-        event.mid = cmd.mid;
-        event.oid = cmd.oid;
-        event.status = status;
-        event.volume = 0;
-        cmd.matchEventList.add(event);
-    }
-
     private long preMatch(RbCmd cmd, NavigableMap<Long, IOrderBucket> matchingBuckets) {
         int tVol = 0;
         if (matchingBuckets.size() == 0) {
@@ -116,6 +105,17 @@ public class GOrderBookImpl implements IOrderBook {
         emptyBuckets.forEach(matchingBuckets::remove);
 
         return tVol;
+    }
+
+    private void genMatchEvent(RbCmd cmd, OrderStatus status) {
+        long now = System.currentTimeMillis();
+        MatchEvent event = new MatchEvent();
+        event.timestamp = now;
+        event.mid = cmd.mid;
+        event.oid = cmd.oid;
+        event.status = status;
+        event.volume = 0;
+        cmd.matchEventList.add(event);
     }
 
     @Override
@@ -187,13 +187,15 @@ public class GOrderBookImpl implements IOrderBook {
         data.buySize = i;
     }
 
+
     @Override
-    public int limitSellBucketSize(int maxSize) {
+    public int limitBuyBucketSize(int maxSize) {
         return Math.min(maxSize, buyBuckets.size());
     }
 
     @Override
-    public int limitBuyBucketSize(int maxSize) {
+    public int limitSellBucketSize(int maxSize) {
         return Math.min(maxSize, sellBuckets.size());
     }
+
 }

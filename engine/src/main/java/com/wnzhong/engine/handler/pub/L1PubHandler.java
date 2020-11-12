@@ -78,7 +78,7 @@ public class L1PubHandler extends BaseHandler {
     public static final short HQ_ADDRESS = -1;
 
     private void pubMarketData(IntObjectHashMap<L1MarketData> marketDataMap) {
-        //log.info(marketDataMap);
+        log.info("------------marketDataMap" + marketDataMap);
         byte[] serialize = null;
         try {
             serialize = engineConfig.getBodyCodec()

@@ -88,8 +88,8 @@ public class CmdPacketQueue {
             log.warn("Received duplicated packId: {}", packNo);
         } else {
             // 异常2：跳号
-            log.info("The packNo lost from {} to {}", lastPackNo + 1, packNo);
-            log.info("Retry querying from sequencer...");
+            //log.info("The packNo lost from {} to {}", lastPackNo + 1, packNo);
+            //log.info("Retry querying from sequencer...");
 
             byte[] firstKey = new byte[8];
             Bits.putLong(firstKey, 0, lastPackNo + 1);
@@ -119,8 +119,8 @@ public class CmdPacketQueue {
             // 排队机出错，导致出现了跳号
             lastPackNo = packNo;
         }
-        log.info("packNo: {}", packNo);
-        log.info("lastPackNo: {}", lastPackNo);
+        //log.info("packNo: {}", packNo);
+        //log.info("lastPackNo: {}", lastPackNo);
     }
 
 }
