@@ -142,8 +142,6 @@
                                 console.error('Subscribe ' + item.code + ' l1 market data fail', err);
                             } else {
                                 let l1MarketData = JSON.parse(reply.body);
-                                console.log("------l1MarketData-------")
-                                console.log(l1MarketData)
                                 if (l1MarketData == null) {
                                     return;
                                 }

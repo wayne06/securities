@@ -2,7 +2,7 @@
     <!--  委托列表  -->
     <div>
         <el-table
-                :data="tableData.slice( (query.currentPage - 1) * query.pageSize, query.currentPage * query.pageSize)"
+                :data="tableData.slice((query.currentPage - 1) * query.pageSize, query.currentPage * query.pageSize)"
                 border
                 :cell-style="cellStyle"
                 :default-sort="{prop:'time',order:'descending'}"
@@ -79,8 +79,6 @@
         },
         created() {
             this.tableData = this.orderData;
-            console.log("------this.tableData-------")
-            console.log(this.tableData)
         },
         methods: {
             isCancelBtnShow(status) {
@@ -120,7 +118,6 @@
                 return moneyFormat(row.price);
             },
             directionFormatter(row, column) {
-                console.log(row);
                 return directionFormat(row.direction);
             },
             // 禁用状态格式化

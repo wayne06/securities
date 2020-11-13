@@ -25,7 +25,7 @@ export const queryOrder = () => {
         "post", config.real_domain,
         "/api/order",
         {uid: sessionStorage.getItem('uid')},
-        (code, msg, data) => {store.commit("updateOrder"), data}
+        (code, msg, data) => {store.commit("updateOrder", data)}
     );
 };
 
@@ -34,7 +34,7 @@ export const queryTrade = () => {
         "post", config.real_domain,
         "/api/trade",
         {"uid": sessionStorage.getItem('uid')},
-        (code, msg, data) => {store.commit('updateTrade'), data}
+        (code, msg, data) => {store.commit('updateTrade', data)}
     );
 };
 

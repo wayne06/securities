@@ -77,12 +77,12 @@ public class OrderController {
     }
 
     @RequestMapping("/cancelorder")
-    public CounterRes cancelOrder(@RequestParam int uid, @RequestParam int counterOId, @RequestParam int code) {
+    public CounterRes cancelOrder(@RequestParam int uid, @RequestParam int counteroid, @RequestParam int code) {
         OrderCmd orderCmd = OrderCmd.builder()
                                     .uid(uid)
                                     .code(code)
                                     .type(CmdType.CANCEL_ORDER)
-                                    .oid(IDConverter.combineInt2Long(counterConfig.getId(), counterOId))
+                                    .oid(IDConverter.combineInt2Long(counterConfig.getId(), counteroid))
                                     .build();
         if (orderService.cancelOrder(orderCmd)) {
             return new CounterRes(CounterRes.SUCCESS, "CANCEL ORDER SUCCESS", null);

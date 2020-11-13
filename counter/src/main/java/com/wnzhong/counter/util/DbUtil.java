@@ -168,7 +168,7 @@ public class DbUtil {
     //********************************** 委托 **********************************
 
     public static List<OrderInfo> getOrderList(long uid) {
-        String uidStr = String.valueOf(uid);
+        String uidStr = Long.toString(uid);
         String orderInCache = RedisStringCache.get(uidStr, CacheType.ORDER);
         if (StringUtils.isEmpty(orderInCache)) {
             List<OrderInfo> orderInfos = dbUtil.getSqlSessionTemplate().selectList(

@@ -73,7 +73,6 @@ public class GOrderBucketImpl implements IOrderBucket {
             Order order = next.getValue();
             //计算order可以吃多少量
             long traded = Math.min(volumeLeft, order.getVolume() - order.getTvolume());
-            order.getTvolume();
             volumeMatch += traded;
 
             //order自身的量；volumeleft；bucket总委托量
@@ -83,7 +82,7 @@ public class GOrderBucketImpl implements IOrderBucket {
 
             //生成事件
             boolean fullMatch = order.getVolume() == order.getTvolume();
-            getMatchEvent(order, triggerCmd, fullMatch, volumeLeft == 0, traded);
+            genMatchEvent(order, triggerCmd, fullMatch, volumeLeft == 0, traded);
 
             if (fullMatch) {
                 removeOrderCallback.accept(order);
@@ -93,7 +92,7 @@ public class GOrderBucketImpl implements IOrderBucket {
         return volumeMatch;
     }
 
-    private void getMatchEvent(Order order, RbCmd cmd, boolean fullMatch, boolean cmdFullMatch, long traded) {
+    private void genMatchEvent(final Order order, final RbCmd cmd, boolean fullMatch, boolean cmdFullMatch, long traded) {
         long now = System.currentTimeMillis();
         long tid = IOrderBucket.tidGen.getAndIncrement();
 
